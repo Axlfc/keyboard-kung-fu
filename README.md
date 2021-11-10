@@ -1,5 +1,5 @@
 # keyboard-kung-fu
-Recopilation of keyboard key combinations & shortuts to achieve different things (Why we need a mouse anyway?)
+Recopilation of keyboard key combinations & shortcuts to achieve different things (Why we need a mouse anyway?)
 
 ## Esssential shortcuts (Windows)
 
