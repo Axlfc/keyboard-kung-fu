@@ -106,13 +106,13 @@ Recopilation of keyboard key combinations & shortcuts to achieve different thing
 #### Open Start menu
 <code>Windows</code>
 
-#### Open hidden menu
-<code>Windows+x</code>
-
 #### Change Start menu size
 <code>Ctrl+Arrow keys</code>
 
-#### Open favorite task (try different numbers)
+#### Open hidden menu
+<code>Windows+x</code>
+
+#### Open favorite app (try different numbers)
 <code>Windows+Number (0-9)</code>
 
 #### Display and hide Desktop
