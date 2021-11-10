@@ -192,3 +192,8 @@ Recopilation of keyboard key combinations & shortuts to achieve different things
 #### Scroll to the bottom
 <code>Ctrl+End</code>
 
+#### Convert selected text to bold
+<code>Ctrl+b</code>
+
+#### Convert selected text to italics
+<code>Ctrl+i</code>
