@@ -106,6 +106,9 @@ Recopilation of keyboard key combinations & shortuts to achieve different things
 #### Open Start menu
 <code>Windows</code>
 
+#### Open hidden menu
+<code>Windows+x</code>
+
 #### Change Start menu size
 <code>Ctrl+Arrow keys</code>
 
@@ -197,3 +200,9 @@ Recopilation of keyboard key combinations & shortuts to achieve different things
 
 #### Convert selected text to italics
 <code>Ctrl+i</code>
+
+#### Convert selected text to underline
+<code>Ctrl+u</code>
+
+#### Save
+<code>Ctrl+s</code>
