@@ -1,7 +1,7 @@
 # keyboard-kung-fu
 Recopilation of keyboard key combinations & shortcuts to achieve different things (Why we need a mouse anyway?)
 
-## Esssential shortcuts (Windows)
+## Esssential shortcuts (Windows, simple ones can work in Linux)
 
 #### Select all
 <code>Ctrl+a</code>
