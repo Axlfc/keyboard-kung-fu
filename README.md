@@ -206,3 +206,6 @@ Recopilation of keyboard key combinations & shortcuts to achieve different thing
 
 #### Save
 <code>Ctrl+s</code>
+
+#### Print
+<code>Ctrl+p</code>
