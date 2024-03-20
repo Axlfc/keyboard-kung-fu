@@ -212,3 +212,154 @@ Recopilation of keyboard key combinations & shortcuts to achieve different thing
 
 #### Print
 <code>Ctrl + p</code>
+
+## Firefox Shortcuts
+
+#### Open Toolbox (with the most recent tool activated)
+<code>Ctrl + Shift + i</code>
+
+#### Open Web Console
+<code>Ctrl + Shift + k</code>
+
+#### Toggle “Pick an element from the page”
+<code>Ctrl + Shift + c</code>
+
+#### Open Style Editor
+<code>Shift + F7</code>
+
+#### Open Network Monitor
+<code>Ctrl + Shift + e</code>
+
+#### Toggle Responsive Design Mode
+<code>Ctrl + Shift + m</code>
+
+#### Open Browser Console
+<code>Ctrl + Shift + j</code>
+
+#### Open Debugger
+<code>Ctrl + Shift + z</code>
+
+#### Cycle through tools left to right
+<code>Ctrl + ]</code>
+
+#### Cycle through tools right to left
+<code>Ctrl + [</code>
+
+#### Toggle toolbox between the last 2 docking modes
+<code>Ctrl + Shift + D</code>
+
+#### Increase font size in Developer Tools
+<code>Ctrl + +</code>
+
+#### Decrease font size in Developer Tools
+<code>Ctrl + -</code>
+
+#### Reset font size in Developer Tools
+<code>Ctrl + 0</code>
+
+#### Open previously closed tab
+<code>Ctrl + Shift + t</code>
+
+#### Open the corresponding tab (1 through 8)
+<code>Ctrl + (number 1-8)</code>
+
+#### Open the last tab
+<code>Ctrl + 9</code>
+
+#### Close current tab
+<code>Ctrl + w</code>
+
+#### Move tab to the right
+<code>Ctrl + Shift + Page Down</code>
+
+#### Move tab to the left
+<code>Ctrl + Shift + Page Up</code>
+
+#### Move to tab in the right
+<code>Ctrl + Page Down</code>
+
+#### Move to tab in the left
+<code>Ctrl + Page Up</code>
+
+#### Open a new tab
+<code>Ctrl + t</code>
+
+#### Open Page Info window
+<code>Ctrl + i</code>
+
+#### Open a new window
+<code>Ctrl + n</code>
+
+#### Open a new private window
+<code>Ctrl + Shift + p</code>
+
+#### Refresh current page
+<code>F5</code> or <code>Ctrl + r</code>
+
+#### Refresh current page (ignore cache)
+<code>Ctrl + F5</code> or <code>Ctrl + Shift + r</code>
+
+#### Stop page loading
+<code>Esc</code>
+
+#### Go back a page
+<code>Alt + Left Arrow</code> or <code>Backspace</code>
+
+#### Go forward a page
+<code>Alt + Right Arrow</code> or <code>Shift + Backspace</code>
+
+#### Open History
+<code>Ctrl + h</code>
+
+#### Open Downloads
+<code>Ctrl + j</code>
+
+#### Open Bookmark Manager
+<code>Ctrl + Shift + o</code>
+
+#### Add current page to bookmarks
+<code>Ctrl + d</code>
+
+#### Toggle full screen mode
+<code>F11</code>
+
+#### Toggle Reader Mode
+<code>F9</code>
+
+#### Toggle Caret Browsing
+<code>F7</code>
+
+#### Bookmark All Tabs
+<code>Ctrl + Shift + d</code>
+
+#### View Page Source
+<code>Ctrl + u</code>
+
+#### Find on page
+<code>Ctrl + f</code>
+
+#### Find next
+<code>F3</code> or <code>Ctrl + g</code>
+
+#### Find previous
+<code>Shift + F3</code> or <code>Ctrl + Shift + g</code>
+
+#### Reopen Last Closed Window
+<code>Ctrl + Shift + t</code>
+
+#### Open Address Bar for Search
+<code>Ctrl + l</code> or <code>Alt + d</code>
+
+#### Bookmark All Tabs
+<code>Ctrl + Shift + d</code>
+
+#### Increase Text Size
+<code>Ctrl + +</code>
+
+#### Decrease Text Size
+<code>Ctrl + -</code>
+
+#### Restore Text Size to Default
+<code>Ctrl + 0</code>
+
+
