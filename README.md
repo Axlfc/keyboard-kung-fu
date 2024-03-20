@@ -269,6 +269,9 @@ Recopilation of keyboard key combinations & shortcuts to achieve different thing
 #### Close current tab
 <code>Ctrl + w</code>
 
+#### Close All Tabs from Window
+<code>Ctrl + Shift + w</code>
+
 #### Move tab to the right
 <code>Ctrl + Shift + Page Down</code>
 
