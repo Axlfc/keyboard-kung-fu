@@ -2,7 +2,7 @@
 
 ### Essential Shortcuts (Windows)
 
-- **Select all**: `Ctrl + A`
+- **Select all**: `Ctrl + A` (`Ctrl + E`)
 - **Copy text**: `Ctrl + C`
 - **Cut text**: `Ctrl + X`
 - **Paste text**: `Ctrl + V`
