@@ -118,7 +118,6 @@
 - **Toggle Reader Mode**: `F9`
 - **Toggle Caret Browsing**: `F7`
 - **Bookmark All Tabs**: `Ctrl + Shift + D`
-- **
 
 View Page Source**: `Ctrl + U`
 - **Find on page**: `Ctrl + F`
