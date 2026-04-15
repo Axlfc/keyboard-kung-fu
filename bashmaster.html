@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BashMaster - Aprende Linux de Cero a Experto</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css" />
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --panel-bg: #161b22;
+            --text-color: #c9d1d9;
+            --accent-color: #58a6ff;
+            --success-color: #3fb950;
+            --error-color: #f85149;
+            --border-color: #30363d;
+            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+        }
+
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 350px 1fr 300px;
+            height: 100vh;
+        }
+
+        #theory-panel { background: var(--panel-bg); border-right: 1px solid var(--border-color); padding: 20px; overflow-y: auto; }
+        #terminal-panel { display: flex; flex-direction: column; background: #000; }
+        #terminal-container { flex: 1; padding: 10px; }
+        #status-panel { background: var(--panel-bg); border-left: 1px solid var(--border-color); padding: 20px; overflow-y: auto; }
+
+        h1, h2, h3 { color: var(--accent-color); }
+        code { background: #21262d; padding: 2px 4px; border-radius: 4px; font-family: var(--font-mono); }
+
+        .exercise-card { background: #21262d; border: 1px solid var(--border-color); border-radius: 6px; padding: 15px; margin-bottom: 15px; }
+
+        .btn { background: var(--accent-color); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .stat-box { background: #21262d; padding: 10px; border-radius: 6px; text-align: center; border: 1px solid var(--border-color); }
+        .stat-val { display: block; font-size: 1.5em; font-weight: bold; color: var(--success-color); }
+
+        #hint-box { margin-top: 10px; padding: 10px; border-left: 4px solid var(--accent-color); background: #1c2128; display: none; }
+        .success { color: var(--success-color); }
+        .error { color: var(--error-color); }
+
+        #hacker-timer { display: none; font-size: 2.5em; text-align: center; color: var(--error-color); margin-bottom: 10px; font-family: var(--font-mono); font-weight: bold; }
+
+        #cheat-sheet { position: fixed; bottom: -300px; left: 0; width: 100%; height: 300px; background: var(--panel-bg); border-top: 2px solid var(--accent-color); transition: bottom 0.3s; padding: 20px; overflow-y: auto; z-index: 100; box-shadow: 0 -5px 15px rgba(0,0,0,0.5); }
+        #cheat-sheet.open { bottom: 0; }
+        .cs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+
+        @media (max-width: 1000px) {
+            .container { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <aside id="theory-panel">
+            <h1>🐚 BashMaster</h1>
+            <div id="module-info">
+                <h2 id="module-title">...</h2>
+                <p id="module-desc"></p>
+                <div id="theory-content"></div>
+            </div>
+            <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 20px 0;">
+            <div id="exercise-list"></div>
+        </aside>
+
+        <main id="terminal-panel">
+            <div id="terminal-container"></div>
+            <div style="background: #111; padding: 5px; font-size: 0.8em; color: #555; text-align: center;">
+                TIP: Usa ↑↓ para el historial. TAB para completar comandos.
+            </div>
+        </main>
+
+        <section id="status-panel">
+            <div class="stats-grid">
+                <div class="stat-box"><span class="stat-label">Nivel</span><span id="stat-level" class="stat-val">1</span></div>
+                <div class="stat-box"><span class="stat-label">XP</span><span id="stat-xp" class="stat-val">0</span></div>
+                <div class="stat-box"><span class="stat-label">Racha</span><span id="stat-streak" class="stat-val">0</span></div>
+                <div class="stat-box"><span class="stat-label">Módulo</span><span id="stat-mod" class="stat-val">1/9</span></div>
+            </div>
+
+            <div id="hacker-timer">02:00</div>
+
+            <h3>Progreso</h3>
+            <div style="width: 100%; background: #30363d; height: 10px; border-radius: 5px; margin-bottom: 10px;">
+                <div id="progress-inner" style="width: 0%; background: var(--success-color); height: 100%; border-radius: 5px; transition: width 0.3s;"></div>
+            </div>
+
+            <div id="validation-feedback"></div>
+
+            <div id="hint-section">
+                <button id="btn-hint" class="btn" style="background: #30363d; width: 100%;">💡 Pista (XP variable)</button>
+                <div id="hint-box"></div>
+            </div>
+
+            <button id="btn-hacker" class="btn" style="background: #f85149; width: 100%; margin-top: 10px;">🔥 Modo Hacker</button>
+
+            <div style="margin-top: 20px;">
+                <button id="btn-next-module" class="btn" style="width: 100%;" disabled>Siguiente Módulo ➡️</button>
+            </div>
+
+            <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: center;">
+                <button id="btn-cs" class="btn" style="background: #30363d;">📖 Cheat Sheet</button>
+                <button id="btn-lang" class="btn" style="background: #30363d;">ES/CA</button>
+                <button id="btn-l33t" class="btn" style="background: #30363d;">L33T</button>
+            </div>
+        </section>
+    </div>
+
+    <div id="cheat-sheet">
+        <h2>Comandos Esenciales</h2>
+        <div class="cs-grid">
+            <div><strong>Navegación</strong><br><code>ls, cd, pwd, mkdir, rm</code></div>
+            <div><strong>Texto</strong><br><code>cat, grep, sed, awk, cut, head, tail, sort, uniq, wc</code></div>
+            <div><strong>Pipes/Redir</strong><br><code>|, >, >>, 2>, <<<, tee</code></div>
+            <div><strong>Seguridad</strong><br><code>chmod, chown, id, whoami, sha256sum, base64, stat</code></div>
+            <div><strong>Sistema</strong><br><code>ps, pgrep, df, free, uptime, tar, jq, xargs, crontab</code></div>
+        </div>
+        <button id="btn-close-cs" class="btn" style="margin-top: 20px;">Cerrar</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.js"></script>
+    <script src="src/engine/core.js"></script>
+    <script src="src/engine/validator.js"></script>
+    <script>
+        let state = { mIdx: 0, eIdx: 0, xp: 0, level: 1, streak: 0, lang: 'ES', l33t: false, history: [], hIdx: -1 };
+        let curriculum = [];
+        let hackerMode = false;
+        let hackerTimer = null;
+        let hintStage = 0;
+
+        const fs = new VirtualFS();
+        const shell = new Shell(fs);
+        const validator = new Validator(shell, fs);
+
+        const term = new Terminal({ theme: { background: '#000000' }, cursorBlink: true, fontSize: 14 });
+        const fitAddon = new FitAddon.FitAddon();
+        term.loadAddon(fitAddon);
+        term.open(document.getElementById('terminal-container'));
+        fitAddon.fit();
+
+        let input = '';
+
+        async function init() {
+            const saved = localStorage.getItem('bashmaster_state');
+            if (saved) state = { ...state, ...JSON.parse(saved) };
+
+            try {
+                const resp = await fetch('src/modules/curriculum.json');
+                curriculum = await resp.json();
+                updateUI();
+                term.writeln('\x1b[1;36mWelcome to BashMaster.\x1b[0m Type commands to begin.');
+                prompt();
+            } catch (e) {
+                console.error("Failed to load curriculum", e);
+            }
+        }
+
+        function prompt() { term.write('\r\n' + shell.getPS1()); }
+
+        function updateUI() {
+            if (!curriculum.length) return;
+            const mod = curriculum[state.mIdx];
+            const ex = mod.exercises[state.eIdx];
+
+            if (ex.setup) {
+                shell.execute(ex.setup);
+            }
+
+            document.getElementById('module-title').innerText = t(mod.title);
+            document.getElementById('module-desc').innerText = t(mod.description);
+            document.getElementById('theory-content').innerHTML = t(mod.theory);
+            document.getElementById('exercise-list').innerHTML = `<h3>Desafío:</h3><div class="exercise-card"><p>${t(ex.task)}</p></div>`;
+            document.getElementById('stat-level').innerText = state.level;
+            document.getElementById('stat-xp').innerText = state.xp;
+            document.getElementById('stat-streak').innerText = state.streak;
+            document.getElementById('stat-mod').innerText = `${state.mIdx + 1}/9`;
+            const prog = ((state.mIdx + (state.eIdx / mod.exercises.length)) / curriculum.length) * 100;
+            document.getElementById('progress-inner').style.width = `${prog}%`;
+            document.getElementById('btn-hint').innerText = hintStage === 0 ? "💡 Pista 1 (10 XP)" : hintStage === 1 ? "💡 Pista 2 (20 XP)" : "💡 Solución (50 XP)";
+            save();
+        }
+
+        function save() { localStorage.setItem('bashmaster_state', JSON.stringify(state)); }
+
+        function t(text) {
+            if (typeof text === 'object') {
+                text = text[state.lang] || text['ES'];
+            }
+            if (state.l33t) return text.replace(/a/gi, '4').replace(/e/gi, '3').replace(/i/gi, '1').replace(/o/gi, '0').replace(/s/gi, '5').replace(/t/gi, '7');
+            return text;
+        }
+
+        term.onData(e => {
+            if (e === '\r') {
+                term.write('\r\n');
+                handle(input);
+                if (input) { state.history.push(input); state.hIdx = state.history.length; }
+                input = '';
+            } else if (e === '\u007F') {
+                if (input.length > 0) { input = input.slice(0, -1); term.write('\b \b'); }
+            } else if (e === '\t') { // Tab completion
+                const parts = input.split(' ');
+                const last = parts.pop();
+                const matches = ['ls','cd','pwd','cat','mkdir','rm','cp','mv','chmod','grep','sed','awk','wc','sort','uniq','whoami','id','df','free','ps','pgrep','uptime','clear','base64','sha256sum','curl','tar','jq','stat','ss','crontab','xargs','tr','tee'].filter(c => c.startsWith(last));
+                if (matches.length === 1) {
+                    const completed = matches[0].slice(last.length);
+                    input += completed;
+                    term.write(completed);
+                }
+            } else if (e === '\u001b[A') { // Up
+                if (state.hIdx > 0) {
+                    state.hIdx--;
+                    term.write('\r' + shell.getPS1() + ' '.repeat(input.length + 20) + '\r' + shell.getPS1() + state.history[state.hIdx]);
+                    input = state.history[state.hIdx];
+                }
+            } else if (e === '\u001b[B') { // Down
+                if (state.hIdx < state.history.length - 1) {
+                    state.hIdx++;
+                    term.write('\r' + shell.getPS1() + ' '.repeat(input.length + 20) + '\r' + shell.getPS1() + state.history[state.hIdx]);
+                    input = state.history[state.hIdx];
+                } else {
+                    state.hIdx = state.history.length;
+                    term.write('\r' + shell.getPS1() + ' '.repeat(input.length + 20) + '\r' + shell.getPS1());
+                    input = '';
+                }
+            } else {
+                input += e; term.write(e);
+            }
+        });
+
+        function handle(cmd) {
+            const res = shell.execute(cmd);
+            if (res.stdout) term.write(res.stdout.replace(/\n/g, '\r\n') + '\r\n');
+            if (res.stderr) term.write('\x1b[31m' + res.stderr.replace(/\n/g, '\r\n') + '\x1b[0m\r\n');
+            if (res.special === 'clear') term.clear();
+
+            const ex = curriculum[state.mIdx].exercises[state.eIdx];
+            if (validator.validate(ex, cmd, res)) {
+                state.xp += hackerMode ? 100 : 50;
+                state.streak++;
+                state.level = Math.floor(state.xp / 500) + 1;
+                document.getElementById('validation-feedback').innerHTML = `<p class="success">✅ Correcto! +${hackerMode ? 100 : 50} XP</p>`;
+                hintStage = 0; document.getElementById('hint-box').style.display = 'none';
+                if (state.eIdx < curriculum[state.mIdx].exercises.length - 1) {
+                    state.eIdx++;
+                    setTimeout(() => { updateUI(); document.getElementById('validation-feedback').innerHTML = ''; }, 1000);
+                } else {
+                    document.getElementById('btn-next-module').disabled = false;
+                }
+            } else if (cmd) { state.streak = 0; updateUI(); }
+            prompt();
+        }
+
+        document.getElementById('btn-hint').onclick = () => {
+            if (hackerMode) return alert('No hay pistas en Modo Hacker.');
+            const ex = curriculum[state.mIdx].exercises[state.eIdx];
+            if (hintStage === 0 && state.xp >= 10) {
+                state.xp -= 10; hintStage = 1;
+                document.getElementById('hint-box').innerText = "PISTA: " + t(ex.hint);
+            } else if (hintStage === 1 && state.xp >= 20) {
+                state.xp -= 20; hintStage = 2;
+                document.getElementById('hint-box').innerText = "PISTA 2: Usa el comando " + ex.solution.split(' ')[0];
+            } else if (hintStage === 2 && state.xp >= 50) {
+                state.xp -= 50;
+                document.getElementById('hint-box').innerText = "SOLUCIÓN: " + ex.solution;
+            } else {
+                return alert('No tienes suficiente XP.');
+            }
+            document.getElementById('hint-box').style.display = 'block';
+            updateUI();
+        };
+
+        document.getElementById('btn-hacker').onclick = () => {
+            if (hackerMode) { stopHacker(); return; }
+            hackerMode = true;
+            document.getElementById('btn-hacker').innerText = "SALIR MODO HACKER";
+            document.getElementById('hacker-timer').style.display = 'block';
+            let timeLeft = 120;
+            hackerTimer = setInterval(() => {
+                timeLeft--;
+                let m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+                document.getElementById('hacker-timer').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+                if (timeLeft <= 0) stopHacker();
+            }, 1000);
+        };
+
+        function stopHacker() {
+            hackerMode = false; clearInterval(hackerTimer);
+            document.getElementById('btn-hacker').innerText = "🔥 MODO HACKER";
+            document.getElementById('hacker-timer').style.display = 'none';
+        }
+
+        document.getElementById('btn-next-module').onclick = () => {
+            state.mIdx++; state.eIdx = 0;
+            document.getElementById('btn-next-module').disabled = true;
+            document.getElementById('validation-feedback').innerHTML = '';
+            updateUI();
+        };
+
+        document.getElementById('btn-cs').onclick = () => document.getElementById('cheat-sheet').classList.toggle('open');
+        document.getElementById('btn-close-cs').onclick = () => document.getElementById('cheat-sheet').classList.remove('open');
+        document.getElementById('btn-l33t').onclick = () => { state.l33t = !state.l33t; updateUI(); };
+        document.getElementById('btn-lang').onclick = () => { state.lang = state.lang === 'ES' ? 'CA' : 'ES'; updateUI(); };
+
+        window.addEventListener('resize', () => fitAddon.fit());
+        init();
+    </script>
+</body>
+</html>
