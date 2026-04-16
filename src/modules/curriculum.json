@@ -1,0 +1,145 @@
+[
+  {
+    "id": 1,
+    "title": { "ES": "1. Fundamentos del Shell", "CA": "1. Fonaments del Shell" },
+    "description": { "ES": "Entorno, variables y ayuda básica.", "CA": "Entorn, variables i ajuda bàsica." },
+    "theory": { "ES": "El Shell es el intérprete de comandos. Bash es el estándar.", "CA": "El Shell és l'intèrpret de comandes. Bash és l'estàndard." },
+    "exercises": [
+      {
+        "id": "1.1",
+        "task": { "ES": "Muestra el contenido de la variable $PATH.", "CA": "Mostra el contingut de la variable $PATH." },
+        "hint": { "ES": "Usa 'echo $PATH'", "CA": "Fes servir 'echo $PATH'" },
+        "solution": "echo $PATH",
+        "validation": { "type": "command_output_contains", "text": "/usr/bin" }
+      },
+      {
+        "id": "1.2",
+        "task": { "ES": "Crea un alias llamado 'c' para el comando 'clear'.", "CA": "Crea un àlies anomenat 'c' per a la comanda 'clear'." },
+        "hint": { "ES": "alias c='clear'", "CA": "alias c='clear'" },
+        "solution": "alias c='clear'",
+        "validation": { "type": "alias_exists", "name": "c", "command": "clear" }
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "title": { "ES": "2. Navegación & Filesystem", "CA": "2. Navegació i Filesystem" },
+    "description": { "ES": "Movimiento y gestión de archivos.", "CA": "Moviment i gestió de fitxers." },
+    "theory": { "ES": "Linux usa una estructura de árbol.", "CA": "Linux utilitza una estructura d'arbre." },
+    "exercises": [
+      {
+        "id": "2.1",
+        "task": { "ES": "Crea un enlace simbólico de '/etc/passwd' llamado 'claves'.", "CA": "Crea un enllaç simbòlic de '/etc/passwd' anomenat 'claves'." },
+        "hint": { "ES": "ln -s /etc/passwd claves", "CA": "ln -s /etc/passwd claves" },
+        "solution": "ln -s /etc/passwd claves",
+        "validation": { "type": "file_exists", "path": "home/user/claves" }
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "title": { "ES": "3. Pipes & Redirección", "CA": "3. Pipes i Redirecció" },
+    "description": { "ES": "Flujos de datos.", "CA": "Fluxos de dades." },
+    "theory": { "ES": "'>' redirige salida, '|' conecta comandos.", "CA": "'>' redirigeix la sortida, '|' connecta comandes." },
+    "exercises": [
+      {
+        "id": "3.1",
+        "task": { "ES": "Redirige el error a 'errores.log'.", "CA": "Redirigeix l'error a 'errores.log'." },
+        "hint": { "ES": "cat inexistente 2> errores.log", "CA": "cat inexistent 2> errores.log" },
+        "solution": "cat inexistente 2> errores.log",
+        "validation": { "type": "file_exists", "path": "home/user/errores.log" }
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "title": { "ES": "4. Procesamiento de Texto", "CA": "4. Processament de Text" },
+    "description": { "ES": "grep, sed y awk.", "CA": "grep, sed i awk." },
+    "theory": { "ES": "grep busca patrones.", "CA": "grep busca patrons." },
+    "exercises": [
+      {
+        "id": "4.1",
+        "task": { "ES": "Filtra 'root' en /etc/passwd.", "CA": "Filtra 'root' a /etc/passwd." },
+        "hint": { "ES": "grep 'root' /etc/passwd", "CA": "grep 'root' /etc/passwd" },
+        "solution": "grep 'root' /etc/passwd",
+        "validation": { "type": "command_output_contains", "text": "root" }
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "title": { "ES": "5. Scripting Bash", "CA": "5. Scripting Bash" },
+    "description": { "ES": "Bucles y condicionales.", "CA": "Bucles i condicionals." },
+    "theory": { "ES": "Usa 'for' e 'if'.", "CA": "Fes servir 'for' i 'if'." },
+    "exercises": [
+      {
+        "id": "5.1",
+        "task": { "ES": "Bucle for del 1 al 3.", "CA": "Bucle for de l'1 al 3." },
+        "hint": { "ES": "for i in 1 2 3; do echo $i; done", "CA": "for i in 1 2 3; do echo $i; done" },
+        "solution": "for i in 1 2 3; do echo $i; done",
+        "validation": { "type": "command_output_contains", "text": "3" }
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "title": { "ES": "6. Gestión de Procesos", "CA": "6. Gestió de Processos" },
+    "description": { "ES": "Control de procesos.", "CA": "Control de processos." },
+    "theory": { "ES": "ps y kill.", "CA": "ps i kill." },
+    "exercises": [
+      {
+        "id": "6.1",
+        "task": { "ES": "Busca el PID de bash.", "CA": "Busca el PID de bash." },
+        "hint": { "ES": "pgrep bash", "CA": "pgrep bash" },
+        "solution": "pgrep bash",
+        "validation": { "type": "command_contains", "text": "pgrep" }
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "title": { "ES": "7. Red & Seguridad", "CA": "7. Xarxa i Seguretat" },
+    "description": { "ES": "Conectividad y permisos.", "CA": "Connectivitat i permisos." },
+    "theory": { "ES": "curl y chmod.", "CA": "curl i chmod." },
+    "exercises": [
+      {
+        "id": "7.1",
+        "task": { "ES": "Permisos 600.", "CA": "Permisos 600." },
+        "hint": { "ES": "chmod 600 file", "CA": "chmod 600 file" },
+        "setup": "touch secreto",
+        "solution": "chmod 600 secreto",
+        "validation": { "type": "file_permissions", "path": "home/user/secreto", "mode": "600" }
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "title": { "ES": "8. Automatización Avanzada", "CA": "8. Automatització Avançada" },
+    "description": { "ES": "tar y jq.", "CA": "tar i jq." },
+    "theory": { "ES": "Comprimir y procesar JSON.", "CA": "Comprimir i processar JSON." },
+    "exercises": [
+      {
+        "id": "8.1",
+        "task": { "ES": "Extrae 'name' con jq.", "CA": "Extreu 'name' amb jq." },
+        "hint": { "ES": "echo '{\"name\":\"bash\"}' | jq .name", "CA": "echo '{\"name\":\"bash\"}' | jq .name" },
+        "solution": "echo '{\"name\":\"bash\"}' | jq .name",
+        "validation": { "type": "command_output_contains", "text": "bash" }
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "title": { "ES": "9. Labs CTF-Style", "CA": "9. Labs CTF-Style" },
+    "description": { "ES": "Desafíos finales.", "CA": "Desafiaments finals." },
+    "theory": { "ES": "Auditoría SUID.", "CA": "Auditoria SUID." },
+    "exercises": [
+      {
+        "id": "9.1",
+        "task": { "ES": "Busca SUID en /usr/bin.", "CA": "Busca SUID a /usr/bin." },
+        "hint": { "ES": "find /usr/bin -perm -4000", "CA": "find /usr/bin -perm -4000" },
+        "solution": "find /usr/bin -perm -4000",
+        "validation": { "type": "command_contains", "text": "-perm" }
+      }
+    ]
+  }
+]
