@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BashMaster - Aprende Linux de Cero a Experto</title>
+    <title>🐚 BashMaster - Aprende Linux de Cero a Experto</title>
+    <!-- xterm.js from CDN for terminal simulation -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css" />
     <style>
         :root {
@@ -27,39 +28,48 @@
 
         .container {
             display: grid;
-            grid-template-columns: 350px 1fr 300px;
+            grid-template-columns: 380px 1fr 300px;
             height: 100vh;
         }
 
-        #theory-panel { background: var(--panel-bg); border-right: 1px solid var(--border-color); padding: 20px; overflow-y: auto; }
-        #terminal-panel { display: flex; flex-direction: column; background: #000; }
+        #theory-panel { background: var(--panel-bg); border-right: 1px solid var(--border-color); padding: 25px; overflow-y: auto; }
+        #terminal-panel { display: flex; flex-direction: column; background: #000; border-right: 1px solid var(--border-color); }
         #terminal-container { flex: 1; padding: 10px; }
-        #status-panel { background: var(--panel-bg); border-left: 1px solid var(--border-color); padding: 20px; overflow-y: auto; }
+        #status-panel { background: var(--panel-bg); padding: 20px; overflow-y: auto; }
 
-        h1, h2, h3 { color: var(--accent-color); }
-        code { background: #21262d; padding: 2px 4px; border-radius: 4px; font-family: var(--font-mono); }
+        h1, h2, h3 { color: var(--accent-color); margin-top: 0; }
+        p { line-height: 1.6; font-size: 0.95em; }
+        code { background: #21262d; padding: 2px 5px; border-radius: 4px; font-family: var(--font-mono); font-size: 0.9em; border: 1px solid var(--border-color); }
 
-        .exercise-card { background: #21262d; border: 1px solid var(--border-color); border-radius: 6px; padding: 15px; margin-bottom: 15px; }
+        .exercise-card { background: #21262d; border: 1px solid var(--accent-color); border-radius: 8px; padding: 15px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
 
-        .btn { background: var(--accent-color); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn { background: var(--accent-color); color: white; border: none; padding: 10px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: opacity 0.2s; font-size: 0.9em; }
+        .btn:hover { opacity: 0.8; }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .stat-box { background: #21262d; padding: 10px; border-radius: 6px; text-align: center; border: 1px solid var(--border-color); }
-        .stat-val { display: block; font-size: 1.5em; font-weight: bold; color: var(--success-color); }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
+        .stat-box { background: #0d1117; padding: 12px; border-radius: 8px; text-align: center; border: 1px solid var(--border-color); }
+        .stat-label { font-size: 0.75em; text-transform: uppercase; color: #8b949e; display: block; margin-bottom: 4px; }
+        .stat-val { font-size: 1.4em; font-weight: bold; color: var(--success-color); font-family: var(--font-mono); }
 
-        #hint-box { margin-top: 10px; padding: 10px; border-left: 4px solid var(--accent-color); background: #1c2128; display: none; }
-        .success { color: var(--success-color); }
+        #hint-box { margin-top: 15px; padding: 15px; border-left: 4px solid var(--accent-color); background: #1c2128; display: none; border-radius: 0 6px 6px 0; font-size: 0.9em; }
+        .success { color: var(--success-color); font-weight: bold; }
         .error { color: var(--error-color); }
 
-        #hacker-timer { display: none; font-size: 2.5em; text-align: center; color: var(--error-color); margin-bottom: 10px; font-family: var(--font-mono); font-weight: bold; }
+        #hacker-timer { display: none; font-size: 2.8em; text-align: center; color: var(--error-color); margin-bottom: 15px; font-family: var(--font-mono); font-weight: bold; text-shadow: 0 0 10px rgba(248,81,73,0.3); }
 
-        #cheat-sheet { position: fixed; bottom: -300px; left: 0; width: 100%; height: 300px; background: var(--panel-bg); border-top: 2px solid var(--accent-color); transition: bottom 0.3s; padding: 20px; overflow-y: auto; z-index: 100; box-shadow: 0 -5px 15px rgba(0,0,0,0.5); }
+        #cheat-sheet { position: fixed; bottom: -400px; left: 0; width: 100%; height: 350px; background: var(--panel-bg); border-top: 3px solid var(--accent-color); transition: bottom 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); padding: 25px; overflow-y: auto; z-index: 1000; box-shadow: 0 -10px 30px rgba(0,0,0,0.6); }
         #cheat-sheet.open { bottom: 0; }
-        .cs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        .cs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        .cs-section h4 { color: var(--accent-color); margin-bottom: 8px; border-bottom: 1px solid var(--border-color); }
 
-        @media (max-width: 1000px) {
-            .container { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr 1fr; }
+        @media (max-width: 1200px) {
+            .container { grid-template-columns: 320px 1fr 250px; }
+        }
+        @media (max-width: 900px) {
+            .container { grid-template-columns: 1fr; grid-template-rows: auto 1fr auto; }
+            #theory-panel, #status-panel { height: auto; border: none; }
+            #theory-panel { border-bottom: 1px solid var(--border-color); }
         }
     </style>
 </head>
@@ -68,7 +78,7 @@
         <aside id="theory-panel">
             <h1>🐚 BashMaster</h1>
             <div id="module-info">
-                <h2 id="module-title">...</h2>
+                <h2 id="module-title">Iniciando...</h2>
                 <p id="module-desc"></p>
                 <div id="theory-content"></div>
             </div>
@@ -78,8 +88,8 @@
 
         <main id="terminal-panel">
             <div id="terminal-container"></div>
-            <div style="background: #111; padding: 5px; font-size: 0.8em; color: #555; text-align: center;">
-                TIP: Usa ↑↓ para el historial. TAB para completar comandos.
+            <div style="background: #111; padding: 8px; font-size: 0.8em; color: #6e7681; text-align: center; border-top: 1px solid var(--border-color);">
+                ↑↓ Historial | TAB Completar | CTRL+L Limpiar
             </div>
         </main>
 
@@ -93,93 +103,699 @@
 
             <div id="hacker-timer">02:00</div>
 
-            <h3>Progreso</h3>
+            <h3>Progreso Módulo</h3>
             <div style="width: 100%; background: #30363d; height: 10px; border-radius: 5px; margin-bottom: 10px;">
-                <div id="progress-inner" style="width: 0%; background: var(--success-color); height: 100%; border-radius: 5px; transition: width 0.3s;"></div>
+                <div id="progress-inner" style="width: 0%; background: var(--success-color); height: 100%; border-radius: 5px; transition: width 0.4s;"></div>
             </div>
 
-            <div id="validation-feedback"></div>
+            <div id="validation-feedback" style="min-height: 40px; margin-bottom: 10px;"></div>
 
             <div id="hint-section">
-                <button id="btn-hint" class="btn" style="background: #30363d; width: 100%;">💡 Pista (XP variable)</button>
+                <button id="btn-hint" class="btn" style="background: #30363d; width: 100%;">💡 Pista (10 XP)</button>
                 <div id="hint-box"></div>
             </div>
 
-            <button id="btn-hacker" class="btn" style="background: #f85149; width: 100%; margin-top: 10px;">🔥 Modo Hacker</button>
+            <button id="btn-hacker" class="btn" style="background: #f85149; width: 100%; margin-top: 15px;">🔥 MODO HACKER</button>
 
-            <div style="margin-top: 20px;">
-                <button id="btn-next-module" class="btn" style="width: 100%;" disabled>Siguiente Módulo ➡️</button>
+            <div style="margin-top: 25px;">
+                <button id="btn-next-module" class="btn" style="width: 100%; background: var(--success-color);" disabled>Siguiente Módulo ➡️</button>
             </div>
 
-            <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: center;">
-                <button id="btn-cs" class="btn" style="background: #30363d;">📖 Cheat Sheet</button>
-                <button id="btn-lang" class="btn" style="background: #30363d;">ES/CA</button>
-                <button id="btn-l33t" class="btn" style="background: #30363d;">L33T</button>
+            <div style="margin-top: 30px; display: flex; gap: 10px; justify-content: center;">
+                <button id="btn-cs" class="btn" style="background: #21262d; border: 1px solid var(--border-color);">📖 Cheat Sheet</button>
+                <button id="btn-lang" class="btn" style="background: #21262d; border: 1px solid var(--border-color);">ES/CA</button>
+                <button id="btn-l33t" class="btn" style="background: #21262d; border: 1px solid var(--border-color);">L33T</button>
             </div>
         </section>
     </div>
 
     <div id="cheat-sheet">
-        <h2>Comandos Esenciales</h2>
+        <h2>📚 Guía Rápida de Comandos</h2>
         <div class="cs-grid">
-            <div><strong>Navegación</strong><br><code>ls, cd, pwd, mkdir, rm</code></div>
-            <div><strong>Texto</strong><br><code>cat, grep, sed, awk, cut, head, tail, sort, uniq, wc</code></div>
-            <div><strong>Pipes/Redir</strong><br><code>|, >, >>, 2>, <<<, tee</code></div>
-            <div><strong>Seguridad</strong><br><code>chmod, chown, id, whoami, sha256sum, base64, stat</code></div>
-            <div><strong>Sistema</strong><br><code>ps, pgrep, df, free, uptime, tar, jq, xargs, crontab</code></div>
+            <div class="cs-section">
+                <h4>Navegación</h4>
+                <code>ls -la</code>: Listar todo<br><code>cd dir</code>: Cambiar dir<br><code>pwd</code>: Ruta actual<br><code>mkdir</code>: Crear carpeta
+            </div>
+            <div class="cs-section">
+                <h4>Archivos</h4>
+                <code>touch f</code>: Crear archivo<br><code>rm -rf</code>: Borrar<br><code>cp src dst</code>: Copiar<br><code>mv old new</code>: Mover/Renombrar
+            </div>
+            <div class="cs-section">
+                <h4>Procesamiento</h4>
+                <code>cat, head, tail</code>: Ver<br><code>grep "pat"</code>: Buscar<br><code>sed 's/a/b/'</code>: Editar<br><code>awk '{print $1}'</code>: Columnas
+            </div>
+            <div class="cs-section">
+                <h4>Pipes & Redir</h4>
+                <code>|</code>: Tubería<br><code>></code>: Redirigir (sobrescribir)<br><code>>></code>: Añadir<br><code>2></code>: Errores
+            </div>
+            <div class="cs-section">
+                <h4>Sistema</h4>
+                <code>ps aux</code>: Procesos<br><code>kill -9</code>: Matar<br><code>df -h</code>: Disco<br><code>free -m</code>: RAM
+            </div>
+            <div class="cs-section">
+                <h4>Seguridad</h4>
+                <code>chmod 600</code>: Permisos<br><code>chown user</code>: Dueño<br><code>sudo</code>: Superusuario<br><code>id</code>: Identidad
+            </div>
         </div>
-        <button id="btn-close-cs" class="btn" style="margin-top: 20px;">Cerrar</button>
+        <div style="text-align: center; margin-top: 20px;">
+            <button id="btn-close-cs" class="btn">Cerrar Guía</button>
+        </div>
     </div>
 
+    <!-- External Libs -->
     <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.js"></script>
-    <script src="src/engine/core.js"></script>
-    <script src="src/engine/validator.js"></script>
+
     <script>
-        let state = { mIdx: 0, eIdx: 0, xp: 0, level: 1, streak: 0, lang: 'ES', l33t: false, history: [], hIdx: -1 };
-        let curriculum = [];
-        let hackerMode = false;
-        let hackerTimer = null;
-        let hintStage = 0;
+        // --- DATA ---
+        const curriculum = [
+  {
+    "id": 1,
+    "title": { "ES": "1. Fundamentos del Shell", "CA": "1. Fonaments del Shell" },
+    "description": { "ES": "Variables, alias y ayuda básica.", "CA": "Variables, àlies i ajuda bàsica." },
+    "theory": {
+        "ES": "El Shell es el intérprete de comandos. Bash es el estándar. Usa <code>echo $VAR</code> para ver variables y <code>alias name='cmd'</code> para atajos. <code>man cmd</code> muestra la ayuda.",
+        "CA": "El Shell és l'intèrpret de comandes. Bash és l'estàndard. Fes servir <code>echo $VAR</code> per veure variables i <code>alias name='cmd'</code> per a dreceres. <code>man cmd</code> mostra l'ajuda."
+    },
+    "exercises": [
+      {
+        "id": "1.1",
+        "task": { "ES": "Muestra el valor de la variable $PATH.", "CA": "Mostra el valor de la variable $PATH." },
+        "hint": { "ES": "Usa 'echo $PATH'", "CA": "Fes servir 'echo $PATH'" },
+        "solution": "echo $PATH",
+        "validation": { "type": "command_output_contains", "text": "/usr/bin" }
+      },
+      {
+        "id": "1.2",
+        "task": { "ES": "Crea un alias llamado 'c' para 'clear'.", "CA": "Crea un àlies anomenat 'c' per a 'clear'." },
+        "hint": { "ES": "alias c='clear'", "CA": "alias c='clear'" },
+        "solution": "alias c='clear'",
+        "validation": { "type": "alias_exists", "name": "c", "command": "clear" }
+      },
+      {
+        "id": "1.3",
+        "task": { "ES": "Asigna el valor 'expert' a la variable NIVEL.", "CA": "Assigna el valor 'expert' a la variable NIVEL." },
+        "hint": { "ES": "NIVEL=expert", "CA": "NIVEL=expert" },
+        "solution": "NIVEL=expert",
+        "validation": { "type": "command_contains", "text": "NIVEL=expert" }
+      },
+      {
+        "id": "1.4",
+        "task": { "ES": "Muestra el código de salida del último comando ejecutado.", "CA": "Mostra el codi de sortida de l'última comanda executada." },
+        "hint": { "ES": "echo $?", "CA": "echo $?" },
+        "solution": "echo $?",
+        "validation": { "type": "command_contains", "text": "$?" }
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "title": { "ES": "2. Navegación & Filesystem", "CA": "2. Navegació i Filesystem" },
+    "description": { "ES": "Moverse por el sistema y gestionar archivos.", "CA": "Moure's pel sistema i gestionar fitxers." },
+    "theory": { "ES": "<code>cd</code> cambia directorio, <code>ls</code> lista archivos, <code>ln -s</code> crea enlaces simbólicos, <code>mkdir -p</code> crea carpetas anidadas.", "CA": "<code>cd</code> canvia directori, <code>ls</code> llista fitxers, <code>ln -s</code> crea enllaços simbòlics, <code>mkdir -p</code> crea carpetes niades." },
+    "exercises": [
+      {
+        "id": "2.1",
+        "task": { "ES": "Crea un enlace simbólico de '/etc/passwd' llamado 'claves' en tu home.", "CA": "Crea un enllaç simbòlic de '/etc/passwd' anomenat 'claves' al teu home." },
+        "hint": { "ES": "ln -s /etc/passwd claves", "CA": "ln -s /etc/passwd claves" },
+        "solution": "ln -s /etc/passwd claves",
+        "validation": { "type": "file_exists", "path": "home/user/claves" }
+      },
+      {
+        "id": "2.2",
+        "task": { "ES": "Crea una estructura de directorios anidada 'backup/2024/01' usando un solo comando.", "CA": "Crea una estructura de directoris niada 'backup/2024/01' fent servir una sola comanda." },
+        "hint": { "ES": "mkdir -p backup/2024/01", "CA": "mkdir -p backup/2024/01" },
+        "solution": "mkdir -p backup/2024/01",
+        "validation": { "type": "file_exists", "path": "home/user/backup/2024/01", "is_dir": true }
+      },
+      {
+        "id": "2.3",
+        "task": { "ES": "Busca todos los archivos en /etc que contengan 'host' en su nombre.", "CA": "Busca tots els fitxers a /etc que continguin 'host' al seu nom." },
+        "hint": { "ES": "find /etc -name '*host*'", "CA": "find /etc -name '*host*'" },
+        "solution": "find /etc -name '*host*'",
+        "validation": { "type": "command_contains", "text": "find" }
+      },
+      {
+        "id": "2.4",
+        "task": { "ES": "Crea un archivo vacío llamado 'notas.txt' y luego elimínalo.", "CA": "Crea un fitxer buit anomenat 'notas.txt' i després elimina'l." },
+        "hint": { "ES": "touch notas.txt && rm notas.txt", "CA": "touch notas.txt && rm notas.txt" },
+        "solution": "touch notas.txt && rm notas.txt",
+        "validation": { "type": "command_contains", "text": "rm" }
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "title": { "ES": "3. Pipes & Redirección", "CA": "3. Pipes i Redirecció" },
+    "description": { "ES": "Encadenar comandos y manejar flujos.", "CA": "Encadenar comandes i gestionar fluxos." },
+    "theory": { "ES": "<code>|</code> pasa la salida al siguiente comando. <code>></code> guarda la salida. <code>2></code> redirige errores. <code>tee</code> hace ambas.", "CA": "<code>|</code> passa la sortida a la següent comanda. <code>></code> desa la sortida. <code>2></code> redirigeix errors. <code>tee</code> fa les dues coses." },
+    "exercises": [
+      {
+        "id": "3.1",
+        "task": { "ES": "Guarda la salida de 'whoami' en un archivo llamado 'user.txt'.", "CA": "Desa la sortida de 'whoami' en un fitxer anomenat 'user.txt'." },
+        "hint": { "ES": "whoami > user.txt", "CA": "whoami > user.txt" },
+        "solution": "whoami > user.txt",
+        "validation": { "type": "file_content", "path": "home/user/user.txt", "content": "user" }
+      },
+      {
+        "id": "3.2",
+        "task": { "ES": "Lista los archivos de /bin y guarda el resultado en 'binarios.txt' mientras lo ves por pantalla.", "CA": "Llista els fitxers de /bin i desa el resultat a 'binarios.txt' mentre ho veus per pantalla." },
+        "hint": { "ES": "ls /bin | tee binarios.txt", "CA": "ls /bin | tee binarios.txt" },
+        "solution": "ls /bin | tee binarios.txt",
+        "validation": { "type": "file_exists", "path": "home/user/binarios.txt" }
+      },
+      {
+        "id": "3.3",
+        "task": { "ES": "Intenta leer un archivo inexistente y redirige el error a 'error.log'.", "CA": "Intenta llegir un fitxer inexistent i redirigeix l'error a 'error.log'." },
+        "hint": { "ES": "cat nada 2> error.log", "CA": "cat nada 2> error.log" },
+        "solution": "cat nada 2> error.log",
+        "validation": { "type": "file_exists", "path": "home/user/error.log" }
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "title": { "ES": "4. Procesamiento de Texto", "CA": "4. Processament de Text" },
+    "description": { "ES": "grep, sed, awk y cut.", "CA": "grep, sed, awk i cut." },
+    "theory": { "ES": "Filtra con <code>grep</code>, extrae columnas con <code>cut</code> o <code>awk</code>, y sustituye con <code>sed</code>.", "CA": "Filtra amb <code>grep</code>, extreu columnes amb <code>cut</code> o <code>awk</code>, i substitueix amb <code>sed</code>." },
+    "exercises": [
+      {
+        "id": "4.1",
+        "task": { "ES": "Muestra solo la primera columna de /etc/passwd (delimitador ':').", "CA": "Mostra només la primera columna de /etc/passwd (delimitador ':')." },
+        "hint": { "ES": "cut -d: -f1 /etc/passwd", "CA": "cut -d: -f1 /etc/passwd" },
+        "solution": "cut -d: -f1 /etc/passwd",
+        "validation": { "type": "command_output_contains", "text": "root" }
+      },
+      {
+        "id": "4.2",
+        "task": { "ES": "Busca la palabra 'bin' en /etc/passwd usando grep.", "CA": "Busca la paraula 'bin' a /etc/passwd fent servir grep." },
+        "hint": { "ES": "grep 'bin' /etc/passwd", "CA": "grep 'bin' /etc/passwd" },
+        "solution": "grep 'bin' /etc/passwd",
+        "validation": { "type": "command_output_contains", "text": "bin" }
+      },
+      {
+        "id": "4.3",
+        "task": { "ES": "Cuenta cuántas líneas tiene el archivo /etc/passwd.", "CA": "Compta quantes línies té el fitxer /etc/passwd." },
+        "hint": { "ES": "wc -l /etc/passwd", "CA": "wc -l /etc/passwd" },
+        "solution": "wc -l /etc/passwd",
+        "validation": { "type": "command_output", "pattern": "^\\d+" }
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "title": { "ES": "5. Scripting Bash", "CA": "5. Scripting Bash" },
+    "description": { "ES": "Bucles, condicionales y automatización.", "CA": "Bucles, condicionals i automatització." },
+    "theory": { "ES": "Usa <code>for i in 1 2 3; do echo $i; done</code> para iterar sobre listas.", "CA": "Fes servir <code>for i in 1 2 3; do echo $i; done</code> per iterar sobre llistes." },
+    "exercises": [
+      {
+        "id": "5.1",
+        "task": { "ES": "Crea un bucle for que imprima los números 1 2 3.", "CA": "Crea un bucle for que imprimeixi els números 1 2 3." },
+        "hint": { "ES": "for i in 1 2 3; do echo $i; done", "CA": "for i in 1 2 3; do echo $i; done" },
+        "solution": "for i in 1 2 3; do echo $i; done",
+        "validation": { "type": "command_output_contains", "text": "3" }
+      },
+      {
+        "id": "5.2",
+        "task": { "ES": "Usa un condicional para verificar si /etc/passwd existe e imprime 'si'.", "CA": "Fes servir un condicional per verificar si /etc/passwd existeix i imprimeix 'si'." },
+        "hint": { "ES": "if [ -f /etc/passwd ]; then echo si; fi", "CA": "if [ -f /etc/passwd ]; then echo si; fi" },
+        "solution": "if [ -f /etc/passwd ]; then echo si; fi",
+        "validation": { "type": "command_output_contains", "text": "si" }
+      },
+      {
+        "id": "5.3",
+        "task": { "ES": "Define un array 'colores' con 'azul' y 'rojo'.", "CA": "Defineix un array 'colores' amb 'azul' i 'rojo'." },
+        "hint": { "ES": "colores=(azul rojo)", "CA": "colores=(azul rojo)" },
+        "solution": "colores=(azul rojo)",
+        "validation": { "type": "command_contains", "text": "=(" }
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "title": { "ES": "6. Gestión de Procesos", "CA": "6. Gestió de Processos" },
+    "description": { "ES": "Administrar la ejecución de programas.", "CA": "Administrar l'execució de programes." },
+    "theory": { "ES": "<code>ps aux</code> muestra todos los procesos. <code>kill</code> envía señales para terminarlos.", "CA": "<code>ps aux</code> mostra tots els processos. <code>kill</code> envia senyals per acabar-los." },
+    "exercises": [
+      {
+        "id": "6.1",
+        "task": { "ES": "Busca el PID del proceso 'bash'.", "CA": "Busca el PID del procés 'bash'." },
+        "hint": { "ES": "pgrep bash", "CA": "pgrep bash" },
+        "solution": "pgrep bash",
+        "validation": { "type": "command_output", "pattern": "^\\d+" }
+      },
+      {
+        "id": "6.2",
+        "task": { "ES": "Muestra el tiempo que el sistema lleva encendido.", "CA": "Mostra el temps que el sistema porta encès." },
+        "hint": { "ES": "uptime", "CA": "uptime" },
+        "solution": "uptime",
+        "validation": { "type": "command_contains", "text": "uptime" }
+      },
+      {
+        "id": "6.3",
+        "task": { "ES": "Muestra el uso de disco del sistema en formato legible.", "CA": "Mostra l'ús de disc del sistema en format llegible." },
+        "hint": { "ES": "df -h", "CA": "df -h" },
+        "solution": "df -h",
+        "validation": { "type": "command_contains", "text": "df" }
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "title": { "ES": "7. Red & Seguridad", "CA": "7. Xarxa i Seguretat" },
+    "description": { "ES": "Permisos y herramientas de red.", "CA": "Permisos i eines de xarxa." },
+    "theory": { "ES": "<code>chmod</code> cambia permisos. 600 significa lectura/escritura solo dueño.", "CA": "<code>chmod</code> canvia permisos. 600 significa lectura/escriptura només amo." },
+    "exercises": [
+      {
+        "id": "7.1",
+        "task": { "ES": "Cambia permisos de 'secreto' a 600.", "CA": "Canvia permisos de 'secreto' a 600." },
+        "hint": { "ES": "chmod 600 secreto", "CA": "chmod 600 secreto" },
+        "setup": "touch secreto",
+        "solution": "chmod 600 secreto",
+        "validation": { "type": "file_permissions", "path": "home/user/secreto", "mode": "600" }
+      },
+      {
+        "id": "7.2",
+        "task": { "ES": "Calcula el hash SHA256 de /etc/hostname.", "CA": "Calcula el hash SHA256 de /etc/hostname." },
+        "hint": { "ES": "sha256sum /etc/hostname", "CA": "sha256sum /etc/hostname" },
+        "solution": "sha256sum /etc/hostname",
+        "validation": { "type": "command_contains", "text": "sha256sum" }
+      },
+      {
+        "id": "7.3",
+        "task": { "ES": "Verifica los puertos en escucha en el sistema.", "CA": "Verifica els ports en escolta al sistema." },
+        "hint": { "ES": "ss -lntp", "CA": "ss -lntp" },
+        "solution": "ss -lntp",
+        "validation": { "type": "command_contains", "text": "ss" }
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "title": { "ES": "8. Automatización Avanzada", "CA": "8. Automatització Avançada" },
+    "description": { "ES": "jq y procesamiento JSON.", "CA": "jq i processament JSON." },
+    "theory": { "ES": "<code>jq</code> permite extraer datos de archivos JSON de forma programática.", "CA": "<code>jq</code> permet extreure dades de fitxers JSON de forma programàtica." },
+    "exercises": [
+      {
+        "id": "8.1",
+        "task": { "ES": "Extrae el valor 'bash' de {'name': 'bash'}.", "CA": "Extreu el valor 'bash' de {'name': 'bash'}." },
+        "hint": { "ES": "echo '{\"name\":\"bash\"}' | jq .name", "CA": "echo '{\"name\":\"bash\"}' | jq .name" },
+        "solution": "echo '{\"name\":\"bash\"}' | jq .name",
+        "validation": { "type": "command_output_contains", "text": "bash" }
+      },
+      {
+        "id": "8.2",
+        "task": { "ES": "Usa xargs para ejecutar echo sobre una lista de archivos.", "CA": "Fes servir xargs per executar echo sobre una llista de fitxers." },
+        "hint": { "ES": "ls | xargs echo", "CA": "ls | xargs echo" },
+        "solution": "ls | xargs echo",
+        "validation": { "type": "command_contains", "text": "xargs" }
+      },
+      {
+        "id": "8.3",
+        "task": { "ES": "Comprime el directorio actual en un archivo 'backup.tar.gz'.", "CA": "Comprimeix el directori actual en un fitxer 'backup.tar.gz'." },
+        "hint": { "ES": "tar -czvf backup.tar.gz .", "CA": "tar -czvf backup.tar.gz ." },
+        "solution": "tar -czvf backup.tar.gz .",
+        "validation": { "type": "file_exists", "path": "home/user/backup.tar.gz" }
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "title": { "ES": "9. Labs CTF-Style", "CA": "9. Labs CTF-Style" },
+    "description": { "ES": "Retos finales de administrador.", "CA": "Reptes finals d'administrador." },
+    "theory": { "ES": "Encuentra vulnerabilidades como el bit SUID activo.", "CA": "Troba vulnerabilitats com el bit SUID actiu." },
+    "exercises": [
+      {
+        "id": "9.1",
+        "task": { "ES": "Busca archivos con bit SUID en /usr/bin.", "CA": "Busca fitxers amb bit SUID a /usr/bin." },
+        "hint": { "ES": "find /usr/bin -perm -4000", "CA": "find /usr/bin -perm -4000" },
+        "solution": "find /usr/bin -perm -4000",
+        "validation": { "type": "command_contains", "text": "-perm" }
+      },
+      {
+        "id": "9.2",
+        "task": { "ES": "Analiza los logs en busca de intentos fallidos de login.", "CA": "Analitza els logs a la recerca d'intents fallits de login." },
+        "hint": { "ES": "grep 'Failed password' /var/log/auth.log", "CA": "grep 'Failed password' /var/log/auth.log" },
+        "setup": "mkdir -p /var/log && echo 'Failed password for root' > /var/log/auth.log",
+        "solution": "grep 'Failed password' /var/log/auth.log",
+        "validation": { "type": "command_output_contains", "text": "Failed" }
+      },
+      {
+        "id": "9.3",
+        "task": { "ES": "Identifica qué shell usa el usuario root en /etc/passwd.", "CA": "Identifica quina shell utilitza l'usuari root a /etc/passwd." },
+        "hint": { "ES": "grep '^root:' /etc/passwd | cut -d: -f7", "CA": "grep '^root:' /etc/passwd | cut -d: -f7" },
+        "solution": "grep '^root:' /etc/passwd | cut -d: -f7",
+        "validation": { "type": "command_output_contains", "text": "/bin/bash" }
+      }
+    ]
+  }
+];
 
-        const fs = new VirtualFS();
-        const shell = new Shell(fs);
-        const validator = new Validator(shell, fs);
-
-        const term = new Terminal({ theme: { background: '#000000' }, cursorBlink: true, fontSize: 14 });
-        const fitAddon = new FitAddon.FitAddon();
-        term.loadAddon(fitAddon);
-        term.open(document.getElementById('terminal-container'));
-        fitAddon.fit();
-
-        let input = '';
-
-        async function init() {
-            const saved = localStorage.getItem('bashmaster_state');
-            if (saved) state = { ...state, ...JSON.parse(saved) };
-
-            try {
-                const resp = await fetch('src/modules/curriculum.json');
-                curriculum = await resp.json();
-                updateUI();
-                term.writeln('\x1b[1;36mWelcome to BashMaster.\x1b[0m Type commands to begin.');
-                prompt();
-            } catch (e) {
-                console.error("Failed to load curriculum", e);
+        // --- ENGINE CLASSES ---
+        class VirtualFS {
+            constructor() {
+                this.root = { type: 'dir', children: {}, permissions: '755', owner: 'root', group: 'root', mtime: new Date(), size: 4096 };
+                this.cwd = '/home/user';
+                this._init();
+            }
+            _init() {
+                this.mkdir('/home', 'root', 'root');
+                this.mkdir('/home/user', 'user', 'user');
+                this.mkdir('/tmp', 'root', 'root', '1777');
+                this.mkdir('/bin', 'root', 'root');
+                this.mkdir('/usr', 'root', 'root');
+                this.mkdir('/usr/bin', 'root', 'root');
+                this.mkdir('/etc', 'root', 'root');
+                this.mkdir('/var', 'root', 'root');
+                this.mkdir('/var/log', 'root', 'root');
+                this.writeFile('/etc/hostname', 'bash-master', '644', 'root', 'root');
+                this.writeFile('/etc/passwd', 'root:x:0:0:root:/root:/bin/bash\nuser:x:1000:1000:user:/home/user:/bin/bash', '644', 'root', 'root');
+                this.writeFile('/etc/shadow', 'root:*:19000:0:99999:7:::', '600', 'root', 'root');
+                this.writeFile('/usr/bin/sudo', 'BINARY', '4755', 'root', 'root');
+            }
+            _resolvePath(path) {
+                if (!path) return this.cwd;
+                if (path === '~') return '/home/user';
+                if (path.startsWith('~/')) path = '/home/user' + path.slice(1);
+                if (!path.startsWith('/')) { path = (this.cwd === '/' ? '' : this.cwd) + '/' + path; }
+                const parts = path.split('/').filter(p => p && p !== '.');
+                const resolved = [];
+                for (const part of parts) { if (part === '..') resolved.pop(); else resolved.push(part); }
+                return '/' + (resolved.join('/') || '');
+            }
+            _getNode(path) {
+                const resolved = this._resolvePath(path);
+                if (resolved === '/') return this.root;
+                const parts = resolved.split('/').filter(p => p);
+                let curr = this.root;
+                for (const part of parts) { if (!curr.children || !curr.children[part]) return null; curr = curr.children[part]; }
+                return curr;
+            }
+            mkdir(path, owner = 'user', group = 'user', permissions = '755', recursive = false) {
+                if (recursive) {
+                    const resolved = this._resolvePath(path); const parts = resolved.split('/').filter(p => p);
+                    let curr = ''; for (const part of parts) { curr += '/' + part; if (!this.exists(curr)) this.mkdir(curr, owner, group, permissions, false); }
+                    return true;
+                }
+                const resolved = this._resolvePath(path); const parts = resolved.split('/').filter(p => p); const name = parts.pop();
+                const parentPath = '/' + parts.join('/'); const parent = this._getNode(parentPath);
+                if (parent && parent.type === 'dir') {
+                    if (parent.children[name]) return false;
+                    parent.children[name] = { type: 'dir', children: {}, permissions, owner, group, mtime: new Date(), size: 4096 };
+                    return true;
+                }
+                return false;
+            }
+            writeFile(path, content = '', permissions = '644', owner = 'user', group = 'user') {
+                const resolved = this._resolvePath(path); const parts = resolved.split('/').filter(p => p); const name = parts.pop();
+                const parentPath = '/' + parts.join('/'); const parent = this._getNode(parentPath);
+                if (parent && parent.type === 'dir') {
+                    parent.children[name] = { type: 'file', content, permissions, owner, group, mtime: new Date(), size: content.length };
+                    return true;
+                }
+                return false;
+            }
+            readFile(path) {
+                const node = this._getNode(path);
+                if (node && node.type === 'symlink') return this.readFile(node.target);
+                return (node && node.type === 'file') ? node.content : null;
+            }
+            ls(path = '.') {
+                const node = this._getNode(path);
+                if (node && (node.type === 'dir')) return Object.keys(node.children);
+                return null;
+            }
+            rm(path, recursive = false) {
+                const resolved = this._resolvePath(path);
+                if (resolved === '/' || resolved === '/home' || resolved === '/home/user') return false;
+                const parts = resolved.split('/').filter(p => p); const name = parts.pop();
+                const parentPath = '/' + parts.join('/'); const parent = this._getNode(parentPath);
+                if (parent && parent.children[name]) {
+                    if (parent.children[name].type === 'dir' && !recursive && Object.keys(parent.children[name].children).length > 0) return false;
+                    delete parent.children[name]; return true;
+                }
+                return false;
+            }
+            exists(path) { return this._getNode(path) !== null; }
+            chmod(path, mode) { const node = this._getNode(path); if (node) { node.permissions = mode; return true; } return false; }
+            ln(src, dst, symlink = false) {
+                const srcNode = this._getNode(src); if (!srcNode && !symlink) return false;
+                const rDst = this._resolvePath(dst); const parts = rDst.split('/').filter(p => p); const name = parts.pop();
+                const parent = this._getNode('/' + parts.join('/'));
+                if (parent && parent.type === 'dir') {
+                    parent.children[name] = symlink ? { type: 'symlink', target: src, permissions: '777', owner: 'user', group: 'user', mtime: new Date(), size: src.length } : srcNode;
+                    return true;
+                }
+                return false;
             }
         }
 
-        function prompt() { term.write('\r\n' + shell.getPS1()); }
+        class Shell {
+            constructor(fs) {
+                this.fs = fs;
+                this.env = { HOME: '/home/user', PATH: '/usr/local/bin:/usr/bin:/bin', USER: 'user', SHELL: '/bin/bash', PWD: '/home/user', TERM: 'xterm-256color' };
+                this.aliases = {}; this.history = []; this.lastExitCode = 0; this.variables = {};
+            }
+            getPS1() {
+                const relPwd = this.fs.cwd.replace(this.env.HOME, '~');
+                return `\x1b[32m${this.env.USER}@bashmaster\x1b[0m:\x1b[34m${relPwd}\x1b[0m$ `;
+            }
+            execute(line) {
+                line = line.trim(); if (!line) return { stdout: '', stderr: '', code: 0 };
+                if (/^[A-Za-z_][A-Za-z0-9_]*=/.test(line)) {
+                    const m = line.match(/^([A-Za-z_][A-Za-z0-9_]*)=(.*)/);
+                    let val = m[2];
+                    if (val.startsWith('(') && val.endsWith(')')) this.variables[m[1]] = val.slice(1, -1).split(/\s+/);
+                    else this.variables[m[1]] = val.replace(/^['"]|['"]$/g, '');
+                    return { stdout: '', stderr: '', code: 0 };
+                }
+                line = line.replace(/\$\((.*?)\)/g, (_, cmd) => this.execute(cmd).stdout.trim());
+                if (line.startsWith('for ')) {
+                    const match = line.match(/for\s+(\w+)\s+in\s+([^;]+);\s*do\s+(.+);\s*done/);
+                    if (match) {
+                        const [_, varName, items, body] = match; const itemList = items.trim().split(/\s+/);
+                        let fullStdout = ''; for (const item of itemList) { this.variables[varName] = item; fullStdout += this.execute(body).stdout; }
+                        return { stdout: fullStdout, stderr: '', code: 0 };
+                    }
+                }
+                if (line.startsWith('if ')) {
+                    const match = line.match(/if\s+\[\s+(.*?)\s+\];\s*then\s+(.*?);\s*fi/);
+                    if (match) {
+                        const [_, condition, body] = match;
+                        if (this._evalCondition(condition)) return this.execute(body);
+                        return { stdout: '', stderr: '', code: 0 };
+                    }
+                }
+                if (line.includes(' | ')) {
+                    const stages = line.split(' | '); let lastOut = null;
+                    for (const stage of stages) { const res = this._execSingle(stage, lastOut); if (res.code !== 0 && stage !== stages[stages.length-1]) return res; lastOut = res.stdout; }
+                    return { stdout: lastOut, stderr: '', code: 0 };
+                }
+                return this._execSingle(line);
+            }
+            _evalCondition(cond) {
+                const parts = cond.split(/\s+/);
+                if (parts[0] === '-f') return this.fs.exists(parts[1]) && this.fs._getNode(parts[1]).type === 'file';
+                if (parts[0] === '-d') return this.fs.exists(parts[1]) && this.fs._getNode(parts[1]).type === 'dir';
+                if (parts[1] === '==') return parts[0] === parts[2];
+                return false;
+            }
+            _execSingle(line, stdin = null) {
+                if (line.includes(' >> ')) {
+                    const [cmd, file] = line.split(' >> ').map(s => s.trim());
+                    const res = this._execSingle(cmd, stdin);
+                    if (res.code === 0) this.fs.writeFile(file, (this.fs.readFile(file) || '') + res.stdout);
+                    return { stdout: '', stderr: res.stderr, code: res.code };
+                }
+                if (line.includes(' > ')) {
+                    const [cmd, file] = line.split(' > ').map(s => s.trim());
+                    const res = this._execSingle(cmd, stdin);
+                    if (res.code === 0) this.fs.writeFile(file, res.stdout);
+                    return { stdout: '', stderr: res.stderr, code: res.code };
+                }
+                if (line.includes(' 2> ')) {
+                    const [cmd, file] = line.split(' 2> ').map(s => s.trim());
+                    const res = this._execSingle(cmd, stdin);
+                    if (res.stderr) this.fs.writeFile(file, res.stderr);
+                    return { stdout: res.stdout, stderr: '', code: res.code };
+                }
+                if (line.includes(' <<< ')) {
+                    const [cmd, str] = line.split(' <<< ').map(s => s.trim());
+                    return this._execSingle(cmd, str.replace(/^['"]|['"]$/g, ''));
+                }
+                const parts = line.trim().match(/(?:[^\s"']+|"[^"]*"|'[^']*')+/g).map(s => s.replace(/^['"]|['"]$/g, ''));
+                let cmd = parts[0]; const args = parts.slice(1);
+                if (this.aliases[cmd]) return this.execute(this.aliases[cmd] + ' ' + args.join(' '));
+                const expanded = args.map(arg => arg.replace(/\$([A-zA-Z0-9_?]+)/g, (_, n) => (n === '?' ? this.lastExitCode : (this.variables[n] || this.env[n] || ''))));
+                let res = { stdout: '', stderr: '', code: 0 };
+                switch (cmd) {
+                    case 'ls':
+                        const l = expanded.includes('-l'), a = expanded.includes('-a');
+                        let targetLs = expanded.find(arg => !arg.startsWith('-')) || '.';
+                        const entries = this.fs.ls(targetLs);
+                        if (!entries) res = { stdout: '', stderr: `ls: ${targetLs}: No such file or directory`, code: 1 };
+                        else {
+                            let fil = a ? entries.concat(['.', '..']) : entries.filter(e => !e.startsWith('.'));
+                            if (l) res.stdout = fil.map(e => {
+                                const n = this.fs._getNode(targetLs + '/' + e); if (!n) return '';
+                                const t = n.type === 'dir' ? 'd' : (n.type === 'symlink' ? 'l' : '-');
+                                return `${t}${n.permissions} 1 ${n.owner} ${n.group} ${n.size} Jan 01 00:00 ${e}`;
+                            }).join('\n');
+                            else res.stdout = fil.join('  ');
+                        }
+                        break;
+                    case 'cd':
+                        const dir = expanded[0] || this.env.HOME;
+                        if (this.fs.exists(dir) && (this.fs._getNode(dir).type === 'dir')) { this.fs.cwd = this.fs._resolvePath(dir); this.env.PWD = this.fs.cwd; }
+                        else res = { stdout: '', stderr: `cd: ${dir}: No such directory`, code: 1 };
+                        break;
+                    case 'pwd': res.stdout = this.fs.cwd; break;
+                    case 'echo': res.stdout = expanded.join(' '); break;
+                    case 'whoami': res.stdout = this.env.USER; break;
+                    case 'mkdir':
+                        const isP = expanded.includes('-p'); const pathMk = expanded.find(a => !a.startsWith('-'));
+                        if (!pathMk) res.code = 1; else this.fs.mkdir(pathMk, 'user', 'user', '755', isP);
+                        break;
+                    case 'touch': if (!expanded[0]) res.code = 1; else this.fs.writeFile(expanded[0]); break;
+                    case 'rm': this.fs.rm(expanded[expanded.length-1], expanded.includes('-r')); break;
+                    case 'cat':
+                        if (!expanded[0] && stdin) res.stdout = stdin;
+                        else if (expanded[0]) { const c = this.fs.readFile(expanded[0]); if (c === null) res = { stdout: '', stderr: 'No such file', code: 1 }; else res.stdout = c; }
+                        break;
+                    case 'grep':
+                        const pG = expanded.find(x => !x.startsWith('-')), fG = expanded.find(x => !x.startsWith('-') && x !== pG);
+                        let txtG = stdin || (fG ? this.fs.readFile(fG) : null);
+                        if (txtG) res.stdout = txtG.split('\n').filter(l => l.includes(pG)).join('\n');
+                        break;
+                    case 'chmod': this.fs.chmod(expanded[1], expanded[0]); break;
+                    case 'ln': if (expanded.includes('-s')) this.fs.ln(expanded[1], expanded[2], true); break;
+                    case 'clear': res.special = 'clear'; break;
+                    case 'alias':
+                        if (!expanded.length) res.stdout = Object.entries(this.aliases).map(([k,v]) => `alias ${k}='${v}'`).join('\n');
+                        else { const m = expanded.join(' ').match(/([^=]+)=(.*)/); if (m) this.aliases[m[1].trim()] = m[2].replace(/^['"]|['"]$/g, ''); }
+                        break;
+                    case 'pgrep': res.stdout = "1234"; break;
+                    case 'wc':
+                        let wtxt = stdin || (expanded.find(x=>!x.startsWith('-')) ? this.fs.readFile(expanded.find(x=>!x.startsWith('-'))) : null);
+                        if (wtxt) res.stdout = expanded.includes('-l') ? wtxt.split('\n').filter(x=>x).length.toString() : wtxt.length.toString();
+                        break;
+                    case 'cut':
+                        const delim = expanded.includes('-d') ? expanded[expanded.indexOf('-d')+1] : '\t';
+                        const field = expanded.includes('-f') ? parseInt(expanded[expanded.indexOf('-f')+1]) : 1;
+                        const cFile = expanded.find(x=>!x.startsWith('-') && x!==delim && x!==field.toString());
+                        let cTxt = stdin || (cFile ? this.fs.readFile(cFile) : null);
+                        if (cTxt) res.stdout = cTxt.split('\n').map(l => l.split(delim)[field-1] || '').join('\n');
+                        break;
+                    case 'find':
+                        const fpathFind = expanded.find(a => !a.startsWith('-')) || '.';
+                        const fnameFind = expanded.includes('-name') ? expanded[expanded.indexOf('-name')+1] : null;
+                        const resultsFind = [];
+                        const traverseFind = (p, name, node) => {
+                            if (!fnameFind || name.includes(fnameFind.replace(/\*/g,''))) resultsFind.push(p);
+                            if (node.children) Object.entries(node.children).forEach(([cN, cNod]) => traverseFind(p + (p === '/' ? '' : '/') + cN, cN, cNod));
+                        };
+                        const sNF = this.fs._getNode(fpathFind); if (sNF) traverseFind(this.fs._resolvePath(fpathFind), fpathFind.split('/').pop() || '/', sNF);
+                        res.stdout = resultsFind.join('\n'); break;
+                    case 'uptime': res.stdout = "12:00:00 up 10 days, 1:00, 1 user, load average: 0.00, 0.01, 0.05"; break;
+                    case 'df': res.stdout = "Filesystem     Size  Used Avail Use% Mounted on\n/dev/sda1       20G   15G  5.0G  75% /"; break;
+                    case 'ss': res.stdout = "Netid State Recv-Q Send-Q Local Address:Port Peer Address:Port Process\ntcp LISTEN 0 128 0.0.0.0:80 0.0.0.0:*"; break;
+                    case 'sha256sum': res.stdout = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  " + (expanded[0] || '-'); break;
+                    case 'xargs':
+                        const xcmd = expanded[0]; const xargs_in = (stdin || '').trim().split(/\s+/);
+                        let xout = ''; for (const arg of xargs_in) { xout += this.execute(`${xcmd} ${arg}`).stdout; }
+                        res.stdout = xout; break;
+                    case 'tar': if (expanded.includes('-czvf')) this.fs.writeFile(expanded[1], "ARCHIVE_DATA"); break;
+                    case 'jq': if (expanded[0] === '.name') res.stdout = "bash"; break;
+                    case 'tee': this.fs.writeFile(expanded[0], stdin); res.stdout = stdin; break;
+                    default: res = { stdout: '', stderr: `${cmd}: command not found`, code: 127 };
+                }
+                this.lastExitCode = res.code; return res;
+            }
+        }
+
+        class Validator {
+            constructor(shell, fs) { this.shell = shell; this.fs = fs; }
+            validate(ex, cmd, res) {
+                const v = ex.validation; if (!v) return true;
+                switch (v.type) {
+                    case 'command_contains': return cmd.includes(v.text);
+                    case 'command_output_contains': return res.stdout.includes(v.text);
+                    case 'command_output': return new RegExp(v.pattern).test(res.stdout);
+                    case 'alias_exists': return this.shell.aliases[v.name] === v.command;
+                    case 'file_exists': return this.fs.exists(v.path);
+                    case 'file_content': return (this.fs.readFile(v.path) || '').trim() === v.content.trim();
+                    case 'file_permissions': const n = this.fs._getNode(v.path); return n && n.permissions === v.mode;
+                    default: return false;
+                }
+            }
+        }
+
+        // --- APP LOGIC ---
+        let state = { mIdx: 0, eIdx: 0, xp: 0, level: 1, streak: 0, lang: 'ES', l33t: false, history: [], hIdx: -1 };
+        let hackerMode = false, hackerTimer = null, hintStage = 0;
+        const fs = new VirtualFS(), shell = new Shell(fs), validator = new Validator(shell, fs);
+        let term, fitAddon;
+
+        function init() {
+            const saved = localStorage.getItem('bashmaster_state');
+            if (saved) state = { ...state, ...JSON.parse(saved) };
+
+            term = new Terminal({ theme: { background: '#000000', foreground: '#c9d1d9', cursor: '#58a6ff' }, cursorBlink: true, fontSize: 15, fontFamily: 'JetBrains Mono, monospace' });
+            fitAddon = new FitAddon.FitAddon();
+            term.loadAddon(fitAddon);
+            term.open(document.getElementById('terminal-container'));
+            fitAddon.fit();
+
+            updateUI();
+            term.writeln('\x1b[1;36mWelcome to BashMaster v1.2\x1b[0m');
+            term.writeln('Type commands to begin. Good luck, root.');
+            writePrompt();
+
+            let inputBuffer = '';
+            term.onData(e => {
+                if (e === '\r') {
+                    term.write('\r\n'); if (inputBuffer.trim()) { state.history.push(inputBuffer); state.hIdx = state.history.length; }
+                    handleCommand(inputBuffer); inputBuffer = '';
+                } else if (e === '\u007F') {
+                    if (inputBuffer.length > 0) { inputBuffer = inputBuffer.slice(0, -1); term.write('\b \b'); }
+                } else if (e === '\u001b[A') { // Up
+                    if (state.hIdx > 0) { state.hIdx--; term.write('\r\x1b[K' + shell.getPS1() + state.history[state.hIdx]); inputBuffer = state.history[state.hIdx]; }
+                } else if (e === '\u001b[B') { // Down
+                    if (state.hIdx < state.history.length - 1) { state.hIdx++; term.write('\r\x1b[K' + shell.getPS1() + state.history[state.hIdx]); inputBuffer = state.history[state.hIdx]; }
+                    else { state.hIdx = state.history.length; term.write('\r\x1b[K' + shell.getPS1()); inputBuffer = ''; }
+                } else if (e === '\t') {
+                    const parts = inputBuffer.split(' '), last = parts.pop(), matches = ['ls','cd','pwd','cat','mkdir','rm','cp','mv','chmod','grep','sed','awk','wc','sort','uniq','whoami','id','df','free','ps','pgrep','uptime','clear','base64','sha256sum','curl','tar','jq','stat','ss','crontab','xargs','tr','tee','cut','find'].filter(c => c.startsWith(last));
+                    if (matches.length === 1) { const comp = matches[0].slice(last.length); inputBuffer += comp; term.write(comp); }
+                } else { inputBuffer += e; term.write(e); }
+            });
+        }
+
+        function writePrompt() { term.write('\r\n' + shell.getPS1()); }
+
+        function handleCommand(cmd) {
+            const res = shell.execute(cmd);
+            if (res.stdout) term.write(res.stdout.replace(/\n/g, '\r\n') + '\r\n');
+            if (res.stderr) term.write('\x1b[31m' + res.stderr + '\x1b[0m\r\n');
+            if (res.special === 'clear') term.clear();
+
+            const ex = curriculum[state.mIdx].exercises[state.eIdx];
+            if (validator.validate(ex, cmd, res)) {
+                const award = hackerMode ? 100 : 50; state.xp += award; state.streak++;
+                state.level = Math.floor(state.xp / 500) + 1;
+                document.getElementById('validation-feedback').innerHTML = `<p class="success">✅ ¡Excelente! +${award} XP</p>`;
+                if (state.eIdx < curriculum[state.mIdx].exercises.length - 1) {
+                    state.eIdx++; setTimeout(() => { updateUI(); document.getElementById('validation-feedback').innerHTML = ''; }, 1200);
+                } else {
+                    document.getElementById('btn-next-module').disabled = false;
+                    document.getElementById('validation-feedback').innerHTML += `<p class="success">${t({ES: "¡Módulo completado!", CA: "Mòdul completat!"})}</p>`;
+                }
+            } else if (cmd.trim()) { state.streak = 0; updateUI(); }
+            writePrompt();
+        }
 
         function updateUI() {
-            if (!curriculum.length) return;
-            const mod = curriculum[state.mIdx];
-            const ex = mod.exercises[state.eIdx];
-
-            if (ex.setup) {
-                shell.execute(ex.setup);
-            }
-
+            const mod = curriculum[state.mIdx]; const ex = mod.exercises[state.eIdx];
+            if (ex.setup) shell.execute(ex.setup);
             document.getElementById('module-title').innerText = t(mod.title);
             document.getElementById('module-desc').innerText = t(mod.description);
             document.getElementById('theory-content').innerHTML = t(mod.theory);
@@ -194,130 +810,49 @@
             save();
         }
 
+        function t(obj) {
+            let txt = typeof obj === 'string' ? obj : (obj[state.lang] || obj['ES']);
+            if (state.l33t) return txt.replace(/a/gi, '4').replace(/e/gi, '3').replace(/i/gi, '1').replace(/o/gi, '0').replace(/s/gi, '5').replace(/t/gi, '7');
+            return txt;
+        }
+
         function save() { localStorage.setItem('bashmaster_state', JSON.stringify(state)); }
 
-        function t(text) {
-            if (typeof text === 'object') {
-                text = text[state.lang] || text['ES'];
-            }
-            if (state.l33t) return text.replace(/a/gi, '4').replace(/e/gi, '3').replace(/i/gi, '1').replace(/o/gi, '0').replace(/s/gi, '5').replace(/t/gi, '7');
-            return text;
-        }
-
-        term.onData(e => {
-            if (e === '\r') {
-                term.write('\r\n');
-                handle(input);
-                if (input) { state.history.push(input); state.hIdx = state.history.length; }
-                input = '';
-            } else if (e === '\u007F') {
-                if (input.length > 0) { input = input.slice(0, -1); term.write('\b \b'); }
-            } else if (e === '\t') { // Tab completion
-                const parts = input.split(' ');
-                const last = parts.pop();
-                const matches = ['ls','cd','pwd','cat','mkdir','rm','cp','mv','chmod','grep','sed','awk','wc','sort','uniq','whoami','id','df','free','ps','pgrep','uptime','clear','base64','sha256sum','curl','tar','jq','stat','ss','crontab','xargs','tr','tee'].filter(c => c.startsWith(last));
-                if (matches.length === 1) {
-                    const completed = matches[0].slice(last.length);
-                    input += completed;
-                    term.write(completed);
-                }
-            } else if (e === '\u001b[A') { // Up
-                if (state.hIdx > 0) {
-                    state.hIdx--;
-                    term.write('\r' + shell.getPS1() + ' '.repeat(input.length + 20) + '\r' + shell.getPS1() + state.history[state.hIdx]);
-                    input = state.history[state.hIdx];
-                }
-            } else if (e === '\u001b[B') { // Down
-                if (state.hIdx < state.history.length - 1) {
-                    state.hIdx++;
-                    term.write('\r' + shell.getPS1() + ' '.repeat(input.length + 20) + '\r' + shell.getPS1() + state.history[state.hIdx]);
-                    input = state.history[state.hIdx];
-                } else {
-                    state.hIdx = state.history.length;
-                    term.write('\r' + shell.getPS1() + ' '.repeat(input.length + 20) + '\r' + shell.getPS1());
-                    input = '';
-                }
-            } else {
-                input += e; term.write(e);
-            }
-        });
-
-        function handle(cmd) {
-            const res = shell.execute(cmd);
-            if (res.stdout) term.write(res.stdout.replace(/\n/g, '\r\n') + '\r\n');
-            if (res.stderr) term.write('\x1b[31m' + res.stderr.replace(/\n/g, '\r\n') + '\x1b[0m\r\n');
-            if (res.special === 'clear') term.clear();
-
-            const ex = curriculum[state.mIdx].exercises[state.eIdx];
-            if (validator.validate(ex, cmd, res)) {
-                state.xp += hackerMode ? 100 : 50;
-                state.streak++;
-                state.level = Math.floor(state.xp / 500) + 1;
-                document.getElementById('validation-feedback').innerHTML = `<p class="success">✅ Correcto! +${hackerMode ? 100 : 50} XP</p>`;
-                hintStage = 0; document.getElementById('hint-box').style.display = 'none';
-                if (state.eIdx < curriculum[state.mIdx].exercises.length - 1) {
-                    state.eIdx++;
-                    setTimeout(() => { updateUI(); document.getElementById('validation-feedback').innerHTML = ''; }, 1000);
-                } else {
-                    document.getElementById('btn-next-module').disabled = false;
-                }
-            } else if (cmd) { state.streak = 0; updateUI(); }
-            prompt();
-        }
-
         document.getElementById('btn-hint').onclick = () => {
-            if (hackerMode) return alert('No hay pistas en Modo Hacker.');
+            if (hackerMode) return alert('Modo Hacker: No hay ayudas.');
             const ex = curriculum[state.mIdx].exercises[state.eIdx];
-            if (hintStage === 0 && state.xp >= 10) {
-                state.xp -= 10; hintStage = 1;
-                document.getElementById('hint-box').innerText = "PISTA: " + t(ex.hint);
-            } else if (hintStage === 1 && state.xp >= 20) {
-                state.xp -= 20; hintStage = 2;
-                document.getElementById('hint-box').innerText = "PISTA 2: Usa el comando " + ex.solution.split(' ')[0];
-            } else if (hintStage === 2 && state.xp >= 50) {
-                state.xp -= 50;
-                document.getElementById('hint-box').innerText = "SOLUCIÓN: " + ex.solution;
-            } else {
-                return alert('No tienes suficiente XP.');
-            }
-            document.getElementById('hint-box').style.display = 'block';
-            updateUI();
+            if (hintStage === 0 && state.xp >= 10) { state.xp -= 10; hintStage = 1; document.getElementById('hint-box').innerText = "PISTA: " + t(ex.hint); }
+            else if (hintStage === 1 && state.xp >= 20) { state.xp -= 20; hintStage = 2; document.getElementById('hint-box').innerText = "PISTA 2: Prueba con " + ex.solution.split(' ')[0]; }
+            else if (hintStage === 2 && state.xp >= 50) { state.xp -= 50; document.getElementById('hint-box').innerText = "SOLUCIÓN: " + ex.solution; }
+            else return alert('XP Insuficiente');
+            document.getElementById('hint-box').style.display = 'block'; updateUI();
         };
 
         document.getElementById('btn-hacker').onclick = () => {
             if (hackerMode) { stopHacker(); return; }
-            hackerMode = true;
-            document.getElementById('btn-hacker').innerText = "SALIR MODO HACKER";
+            hackerMode = true; document.getElementById('btn-hacker').innerText = "SALIR HACKER";
             document.getElementById('hacker-timer').style.display = 'block';
-            let timeLeft = 120;
+            let left = 120;
             hackerTimer = setInterval(() => {
-                timeLeft--;
-                let m = Math.floor(timeLeft / 60), s = timeLeft % 60;
-                document.getElementById('hacker-timer').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-                if (timeLeft <= 0) stopHacker();
+                left--; let m = Math.floor(left/60), s = left%60;
+                document.getElementById('hacker-timer').innerText = `${m}:${s.toString().padStart(2,'0')}`;
+                if (left <= 0) stopHacker();
             }, 1000);
         };
-
-        function stopHacker() {
-            hackerMode = false; clearInterval(hackerTimer);
-            document.getElementById('btn-hacker').innerText = "🔥 MODO HACKER";
-            document.getElementById('hacker-timer').style.display = 'none';
-        }
+        function stopHacker() { hackerMode = false; clearInterval(hackerTimer); document.getElementById('btn-hacker').innerText = "🔥 MODO HACKER"; document.getElementById('hacker-timer').style.display = 'none'; }
 
         document.getElementById('btn-next-module').onclick = () => {
-            state.mIdx++; state.eIdx = 0;
-            document.getElementById('btn-next-module').disabled = true;
-            document.getElementById('validation-feedback').innerHTML = '';
-            updateUI();
+            if (state.mIdx < curriculum.length - 1) { state.mIdx++; state.eIdx = 0; document.getElementById('btn-next-module').disabled = true; updateUI(); }
+            else alert("¡HAS TERMINADO EL ENTRENAMIENTO! Eres un BashMaster.");
         };
 
         document.getElementById('btn-cs').onclick = () => document.getElementById('cheat-sheet').classList.toggle('open');
         document.getElementById('btn-close-cs').onclick = () => document.getElementById('cheat-sheet').classList.remove('open');
-        document.getElementById('btn-l33t').onclick = () => { state.l33t = !state.l33t; updateUI(); };
         document.getElementById('btn-lang').onclick = () => { state.lang = state.lang === 'ES' ? 'CA' : 'ES'; updateUI(); };
+        document.getElementById('btn-l33t').onclick = () => { state.l33t = !state.l33t; updateUI(); };
 
-        window.addEventListener('resize', () => fitAddon.fit());
-        init();
+        window.addEventListener('resize', () => fitAddon && fitAddon.fit());
+        window.onload = init;
     </script>
 </body>
 </html>

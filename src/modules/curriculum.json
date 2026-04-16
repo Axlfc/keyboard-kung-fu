@@ -2,143 +2,280 @@
   {
     "id": 1,
     "title": { "ES": "1. Fundamentos del Shell", "CA": "1. Fonaments del Shell" },
-    "description": { "ES": "Entorno, variables y ayuda básica.", "CA": "Entorn, variables i ajuda bàsica." },
-    "theory": { "ES": "El Shell es el intérprete de comandos. Bash es el estándar.", "CA": "El Shell és l'intèrpret de comandes. Bash és l'estàndard." },
+    "description": { "ES": "Variables, alias y ayuda básica.", "CA": "Variables, àlies i ajuda bàsica." },
+    "theory": {
+        "ES": "El Shell es el intérprete de comandos. Bash es el estándar. Usa <code>echo $VAR</code> para ver variables y <code>alias name='cmd'</code> para atajos. <code>man cmd</code> muestra la ayuda.",
+        "CA": "El Shell és l'intèrpret de comandes. Bash és l'estàndard. Fes servir <code>echo $VAR</code> per veure variables i <code>alias name='cmd'</code> per a dreceres. <code>man cmd</code> mostra l'ajuda."
+    },
     "exercises": [
       {
         "id": "1.1",
-        "task": { "ES": "Muestra el contenido de la variable $PATH.", "CA": "Mostra el contingut de la variable $PATH." },
+        "task": { "ES": "Muestra el valor de la variable $PATH.", "CA": "Mostra el valor de la variable $PATH." },
         "hint": { "ES": "Usa 'echo $PATH'", "CA": "Fes servir 'echo $PATH'" },
         "solution": "echo $PATH",
         "validation": { "type": "command_output_contains", "text": "/usr/bin" }
       },
       {
         "id": "1.2",
-        "task": { "ES": "Crea un alias llamado 'c' para el comando 'clear'.", "CA": "Crea un àlies anomenat 'c' per a la comanda 'clear'." },
+        "task": { "ES": "Crea un alias llamado 'c' para 'clear'.", "CA": "Crea un àlies anomenat 'c' per a 'clear'." },
         "hint": { "ES": "alias c='clear'", "CA": "alias c='clear'" },
         "solution": "alias c='clear'",
         "validation": { "type": "alias_exists", "name": "c", "command": "clear" }
+      },
+      {
+        "id": "1.3",
+        "task": { "ES": "Asigna el valor 'expert' a la variable NIVEL.", "CA": "Assigna el valor 'expert' a la variable NIVEL." },
+        "hint": { "ES": "NIVEL=expert", "CA": "NIVEL=expert" },
+        "solution": "NIVEL=expert",
+        "validation": { "type": "command_contains", "text": "NIVEL=expert" }
+      },
+      {
+        "id": "1.4",
+        "task": { "ES": "Muestra el código de salida del último comando ejecutado.", "CA": "Mostra el codi de sortida de l'última comanda executada." },
+        "hint": { "ES": "echo $?", "CA": "echo $?" },
+        "solution": "echo $?",
+        "validation": { "type": "command_contains", "text": "$?" }
       }
     ]
   },
   {
     "id": 2,
     "title": { "ES": "2. Navegación & Filesystem", "CA": "2. Navegació i Filesystem" },
-    "description": { "ES": "Movimiento y gestión de archivos.", "CA": "Moviment i gestió de fitxers." },
-    "theory": { "ES": "Linux usa una estructura de árbol.", "CA": "Linux utilitza una estructura d'arbre." },
+    "description": { "ES": "Moverse por el sistema y gestionar archivos.", "CA": "Moure's pel sistema i gestionar fitxers." },
+    "theory": { "ES": "<code>cd</code> cambia directorio, <code>ls</code> lista archivos, <code>ln -s</code> crea enlaces simbólicos, <code>mkdir -p</code> crea carpetas anidadas.", "CA": "<code>cd</code> canvia directori, <code>ls</code> llista fitxers, <code>ln -s</code> crea enllaços simbòlics, <code>mkdir -p</code> crea carpetes niades." },
     "exercises": [
       {
         "id": "2.1",
-        "task": { "ES": "Crea un enlace simbólico de '/etc/passwd' llamado 'claves'.", "CA": "Crea un enllaç simbòlic de '/etc/passwd' anomenat 'claves'." },
+        "task": { "ES": "Crea un enlace simbólico de '/etc/passwd' llamado 'claves' en tu home.", "CA": "Crea un enllaç simbòlic de '/etc/passwd' anomenat 'claves' al teu home." },
         "hint": { "ES": "ln -s /etc/passwd claves", "CA": "ln -s /etc/passwd claves" },
         "solution": "ln -s /etc/passwd claves",
         "validation": { "type": "file_exists", "path": "home/user/claves" }
+      },
+      {
+        "id": "2.2",
+        "task": { "ES": "Crea una estructura de directorios anidada 'backup/2024/01' usando un solo comando.", "CA": "Crea una estructura de directoris niada 'backup/2024/01' fent servir una sola comanda." },
+        "hint": { "ES": "mkdir -p backup/2024/01", "CA": "mkdir -p backup/2024/01" },
+        "solution": "mkdir -p backup/2024/01",
+        "validation": { "type": "file_exists", "path": "home/user/backup/2024/01", "is_dir": true }
+      },
+      {
+        "id": "2.3",
+        "task": { "ES": "Busca todos los archivos en /etc que contengan 'host' en su nombre.", "CA": "Busca tots els fitxers a /etc que continguin 'host' al seu nom." },
+        "hint": { "ES": "find /etc -name '*host*'", "CA": "find /etc -name '*host*'" },
+        "solution": "find /etc -name '*host*'",
+        "validation": { "type": "command_contains", "text": "find" }
+      },
+      {
+        "id": "2.4",
+        "task": { "ES": "Crea un archivo vacío llamado 'notas.txt' y luego elimínalo.", "CA": "Crea un fitxer buit anomenat 'notas.txt' i després elimina'l." },
+        "hint": { "ES": "touch notas.txt && rm notas.txt", "CA": "touch notas.txt && rm notas.txt" },
+        "solution": "touch notas.txt && rm notas.txt",
+        "validation": { "type": "command_contains", "text": "rm" }
       }
     ]
   },
   {
     "id": 3,
     "title": { "ES": "3. Pipes & Redirección", "CA": "3. Pipes i Redirecció" },
-    "description": { "ES": "Flujos de datos.", "CA": "Fluxos de dades." },
-    "theory": { "ES": "'>' redirige salida, '|' conecta comandos.", "CA": "'>' redirigeix la sortida, '|' connecta comandes." },
+    "description": { "ES": "Encadenar comandos y manejar flujos.", "CA": "Encadenar comandes i gestionar fluxos." },
+    "theory": { "ES": "<code>|</code> pasa la salida al siguiente comando. <code>></code> guarda la salida. <code>2></code> redirige errores. <code>tee</code> hace ambas.", "CA": "<code>|</code> passa la sortida a la següent comanda. <code>></code> desa la sortida. <code>2></code> redirigeix errors. <code>tee</code> fa les dues coses." },
     "exercises": [
       {
         "id": "3.1",
-        "task": { "ES": "Redirige el error a 'errores.log'.", "CA": "Redirigeix l'error a 'errores.log'." },
-        "hint": { "ES": "cat inexistente 2> errores.log", "CA": "cat inexistent 2> errores.log" },
-        "solution": "cat inexistente 2> errores.log",
-        "validation": { "type": "file_exists", "path": "home/user/errores.log" }
+        "task": { "ES": "Guarda la salida de 'whoami' en un archivo llamado 'user.txt'.", "CA": "Desa la sortida de 'whoami' en un fitxer anomenat 'user.txt'." },
+        "hint": { "ES": "whoami > user.txt", "CA": "whoami > user.txt" },
+        "solution": "whoami > user.txt",
+        "validation": { "type": "file_content", "path": "home/user/user.txt", "content": "user" }
+      },
+      {
+        "id": "3.2",
+        "task": { "ES": "Lista los archivos de /bin y guarda el resultado en 'binarios.txt' mientras lo ves por pantalla.", "CA": "Llista els fitxers de /bin i desa el resultat a 'binarios.txt' mentre ho veus per pantalla." },
+        "hint": { "ES": "ls /bin | tee binarios.txt", "CA": "ls /bin | tee binarios.txt" },
+        "solution": "ls /bin | tee binarios.txt",
+        "validation": { "type": "file_exists", "path": "home/user/binarios.txt" }
+      },
+      {
+        "id": "3.3",
+        "task": { "ES": "Intenta leer un archivo inexistente y redirige el error a 'error.log'.", "CA": "Intenta llegir un fitxer inexistent i redirigeix l'error a 'error.log'." },
+        "hint": { "ES": "cat nada 2> error.log", "CA": "cat nada 2> error.log" },
+        "solution": "cat nada 2> error.log",
+        "validation": { "type": "file_exists", "path": "home/user/error.log" }
       }
     ]
   },
   {
     "id": 4,
     "title": { "ES": "4. Procesamiento de Texto", "CA": "4. Processament de Text" },
-    "description": { "ES": "grep, sed y awk.", "CA": "grep, sed i awk." },
-    "theory": { "ES": "grep busca patrones.", "CA": "grep busca patrons." },
+    "description": { "ES": "grep, sed, awk y cut.", "CA": "grep, sed i awk." },
+    "theory": { "ES": "Filtra con <code>grep</code>, extrae columnas con <code>cut</code> o <code>awk</code>, y sustituye con <code>sed</code>.", "CA": "Filtra amb <code>grep</code>, extreu columnes amb <code>cut</code> o <code>awk</code>, i substitueix amb <code>sed</code>." },
     "exercises": [
       {
         "id": "4.1",
-        "task": { "ES": "Filtra 'root' en /etc/passwd.", "CA": "Filtra 'root' a /etc/passwd." },
-        "hint": { "ES": "grep 'root' /etc/passwd", "CA": "grep 'root' /etc/passwd" },
-        "solution": "grep 'root' /etc/passwd",
+        "task": { "ES": "Muestra solo la primera columna de /etc/passwd (delimitador ':').", "CA": "Mostra només la primera columna de /etc/passwd (delimitador ':')." },
+        "hint": { "ES": "cut -d: -f1 /etc/passwd", "CA": "cut -d: -f1 /etc/passwd" },
+        "solution": "cut -d: -f1 /etc/passwd",
         "validation": { "type": "command_output_contains", "text": "root" }
+      },
+      {
+        "id": "4.2",
+        "task": { "ES": "Busca la palabra 'bin' en /etc/passwd usando grep.", "CA": "Busca la paraula 'bin' a /etc/passwd fent servir grep." },
+        "hint": { "ES": "grep 'bin' /etc/passwd", "CA": "grep 'bin' /etc/passwd" },
+        "solution": "grep 'bin' /etc/passwd",
+        "validation": { "type": "command_output_contains", "text": "bin" }
+      },
+      {
+        "id": "4.3",
+        "task": { "ES": "Cuenta cuántas líneas tiene el archivo /etc/passwd.", "CA": "Compta quantes línies té el fitxer /etc/passwd." },
+        "hint": { "ES": "wc -l /etc/passwd", "CA": "wc -l /etc/passwd" },
+        "solution": "wc -l /etc/passwd",
+        "validation": { "type": "command_output", "pattern": "^\\d+" }
       }
     ]
   },
   {
     "id": 5,
     "title": { "ES": "5. Scripting Bash", "CA": "5. Scripting Bash" },
-    "description": { "ES": "Bucles y condicionales.", "CA": "Bucles i condicionals." },
-    "theory": { "ES": "Usa 'for' e 'if'.", "CA": "Fes servir 'for' i 'if'." },
+    "description": { "ES": "Bucles, condicionales y automatización.", "CA": "Bucles, condicionals i automatització." },
+    "theory": { "ES": "Usa <code>for i in 1 2 3; do echo $i; done</code> para iterar sobre listas.", "CA": "Fes servir <code>for i in 1 2 3; do echo $i; done</code> per iterar sobre llistes." },
     "exercises": [
       {
         "id": "5.1",
-        "task": { "ES": "Bucle for del 1 al 3.", "CA": "Bucle for de l'1 al 3." },
+        "task": { "ES": "Crea un bucle for que imprima los números 1 2 3.", "CA": "Crea un bucle for que imprimeixi els números 1 2 3." },
         "hint": { "ES": "for i in 1 2 3; do echo $i; done", "CA": "for i in 1 2 3; do echo $i; done" },
         "solution": "for i in 1 2 3; do echo $i; done",
         "validation": { "type": "command_output_contains", "text": "3" }
+      },
+      {
+        "id": "5.2",
+        "task": { "ES": "Usa un condicional para verificar si /etc/passwd existe e imprime 'si'.", "CA": "Fes servir un condicional per verificar si /etc/passwd existeix i imprimeix 'si'." },
+        "hint": { "ES": "if [ -f /etc/passwd ]; then echo si; fi", "CA": "if [ -f /etc/passwd ]; then echo si; fi" },
+        "solution": "if [ -f /etc/passwd ]; then echo si; fi",
+        "validation": { "type": "command_output_contains", "text": "si" }
+      },
+      {
+        "id": "5.3",
+        "task": { "ES": "Define un array 'colores' con 'azul' y 'rojo'.", "CA": "Defineix un array 'colores' amb 'azul' i 'rojo'." },
+        "hint": { "ES": "colores=(azul rojo)", "CA": "colores=(azul rojo)" },
+        "solution": "colores=(azul rojo)",
+        "validation": { "type": "command_contains", "text": "=(" }
       }
     ]
   },
   {
     "id": 6,
     "title": { "ES": "6. Gestión de Procesos", "CA": "6. Gestió de Processos" },
-    "description": { "ES": "Control de procesos.", "CA": "Control de processos." },
-    "theory": { "ES": "ps y kill.", "CA": "ps i kill." },
+    "description": { "ES": "Administrar la ejecución de programas.", "CA": "Administrar l'execució de programes." },
+    "theory": { "ES": "<code>ps aux</code> muestra todos los procesos. <code>kill</code> envía señales para terminarlos.", "CA": "<code>ps aux</code> mostra tots els processos. <code>kill</code> envia senyals per acabar-los." },
     "exercises": [
       {
         "id": "6.1",
-        "task": { "ES": "Busca el PID de bash.", "CA": "Busca el PID de bash." },
+        "task": { "ES": "Busca el PID del proceso 'bash'.", "CA": "Busca el PID del procés 'bash'." },
         "hint": { "ES": "pgrep bash", "CA": "pgrep bash" },
         "solution": "pgrep bash",
-        "validation": { "type": "command_contains", "text": "pgrep" }
+        "validation": { "type": "command_output", "pattern": "^\\d+" }
+      },
+      {
+        "id": "6.2",
+        "task": { "ES": "Muestra el tiempo que el sistema lleva encendido.", "CA": "Mostra el temps que el sistema porta encès." },
+        "hint": { "ES": "uptime", "CA": "uptime" },
+        "solution": "uptime",
+        "validation": { "type": "command_contains", "text": "uptime" }
+      },
+      {
+        "id": "6.3",
+        "task": { "ES": "Muestra el uso de disco del sistema en formato legible.", "CA": "Mostra l'ús de disc del sistema en format llegible." },
+        "hint": { "ES": "df -h", "CA": "df -h" },
+        "solution": "df -h",
+        "validation": { "type": "command_contains", "text": "df" }
       }
     ]
   },
   {
     "id": 7,
     "title": { "ES": "7. Red & Seguridad", "CA": "7. Xarxa i Seguretat" },
-    "description": { "ES": "Conectividad y permisos.", "CA": "Connectivitat i permisos." },
-    "theory": { "ES": "curl y chmod.", "CA": "curl i chmod." },
+    "description": { "ES": "Permisos y herramientas de red.", "CA": "Permisos i eines de xarxa." },
+    "theory": { "ES": "<code>chmod</code> cambia permisos. 600 significa lectura/escritura solo dueño.", "CA": "<code>chmod</code> canvia permisos. 600 significa lectura/escriptura només amo." },
     "exercises": [
       {
         "id": "7.1",
-        "task": { "ES": "Permisos 600.", "CA": "Permisos 600." },
-        "hint": { "ES": "chmod 600 file", "CA": "chmod 600 file" },
+        "task": { "ES": "Cambia permisos de 'secreto' a 600.", "CA": "Canvia permisos de 'secreto' a 600." },
+        "hint": { "ES": "chmod 600 secreto", "CA": "chmod 600 secreto" },
         "setup": "touch secreto",
         "solution": "chmod 600 secreto",
         "validation": { "type": "file_permissions", "path": "home/user/secreto", "mode": "600" }
+      },
+      {
+        "id": "7.2",
+        "task": { "ES": "Calcula el hash SHA256 de /etc/hostname.", "CA": "Calcula el hash SHA256 de /etc/hostname." },
+        "hint": { "ES": "sha256sum /etc/hostname", "CA": "sha256sum /etc/hostname" },
+        "solution": "sha256sum /etc/hostname",
+        "validation": { "type": "command_contains", "text": "sha256sum" }
+      },
+      {
+        "id": "7.3",
+        "task": { "ES": "Verifica los puertos en escucha en el sistema.", "CA": "Verifica els ports en escolta al sistema." },
+        "hint": { "ES": "ss -lntp", "CA": "ss -lntp" },
+        "solution": "ss -lntp",
+        "validation": { "type": "command_contains", "text": "ss" }
       }
     ]
   },
   {
     "id": 8,
     "title": { "ES": "8. Automatización Avanzada", "CA": "8. Automatització Avançada" },
-    "description": { "ES": "tar y jq.", "CA": "tar i jq." },
-    "theory": { "ES": "Comprimir y procesar JSON.", "CA": "Comprimir i processar JSON." },
+    "description": { "ES": "jq y procesamiento JSON.", "CA": "jq i processament JSON." },
+    "theory": { "ES": "<code>jq</code> permite extraer datos de archivos JSON de forma programática.", "CA": "<code>jq</code> permet extreure dades de fitxers JSON de forma programàtica." },
     "exercises": [
       {
         "id": "8.1",
-        "task": { "ES": "Extrae 'name' con jq.", "CA": "Extreu 'name' amb jq." },
+        "task": { "ES": "Extrae el valor 'bash' de {'name': 'bash'}.", "CA": "Extreu el valor 'bash' de {'name': 'bash'}." },
         "hint": { "ES": "echo '{\"name\":\"bash\"}' | jq .name", "CA": "echo '{\"name\":\"bash\"}' | jq .name" },
         "solution": "echo '{\"name\":\"bash\"}' | jq .name",
         "validation": { "type": "command_output_contains", "text": "bash" }
+      },
+      {
+        "id": "8.2",
+        "task": { "ES": "Usa xargs para ejecutar echo sobre una lista de archivos.", "CA": "Fes servir xargs per executar echo sobre una llista de fitxers." },
+        "hint": { "ES": "ls | xargs echo", "CA": "ls | xargs echo" },
+        "solution": "ls | xargs echo",
+        "validation": { "type": "command_contains", "text": "xargs" }
+      },
+      {
+        "id": "8.3",
+        "task": { "ES": "Comprime el directorio actual en un archivo 'backup.tar.gz'.", "CA": "Comprimeix el directori actual en un fitxer 'backup.tar.gz'." },
+        "hint": { "ES": "tar -czvf backup.tar.gz .", "CA": "tar -czvf backup.tar.gz ." },
+        "solution": "tar -czvf backup.tar.gz .",
+        "validation": { "type": "file_exists", "path": "home/user/backup.tar.gz" }
       }
     ]
   },
   {
     "id": 9,
     "title": { "ES": "9. Labs CTF-Style", "CA": "9. Labs CTF-Style" },
-    "description": { "ES": "Desafíos finales.", "CA": "Desafiaments finals." },
-    "theory": { "ES": "Auditoría SUID.", "CA": "Auditoria SUID." },
+    "description": { "ES": "Retos finales de administrador.", "CA": "Reptes finals d'administrador." },
+    "theory": { "ES": "Encuentra vulnerabilidades como el bit SUID activo.", "CA": "Troba vulnerabilitats com el bit SUID actiu." },
     "exercises": [
       {
         "id": "9.1",
-        "task": { "ES": "Busca SUID en /usr/bin.", "CA": "Busca SUID a /usr/bin." },
+        "task": { "ES": "Busca archivos con bit SUID en /usr/bin.", "CA": "Busca fitxers amb bit SUID a /usr/bin." },
         "hint": { "ES": "find /usr/bin -perm -4000", "CA": "find /usr/bin -perm -4000" },
         "solution": "find /usr/bin -perm -4000",
         "validation": { "type": "command_contains", "text": "-perm" }
+      },
+      {
+        "id": "9.2",
+        "task": { "ES": "Analiza los logs en busca de intentos fallidos de login.", "CA": "Analitza els logs a la recerca d'intents fallits de login." },
+        "hint": { "ES": "grep 'Failed password' /var/log/auth.log", "CA": "grep 'Failed password' /var/log/auth.log" },
+        "setup": "mkdir -p /var/log && echo 'Failed password for root' > /var/log/auth.log",
+        "solution": "grep 'Failed password' /var/log/auth.log",
+        "validation": { "type": "command_output_contains", "text": "Failed" }
+      },
+      {
+        "id": "9.3",
+        "task": { "ES": "Identifica qué shell usa el usuario root en /etc/passwd.", "CA": "Identifica quina shell utilitza l'usuari root a /etc/passwd." },
+        "hint": { "ES": "grep '^root:' /etc/passwd | cut -d: -f7", "CA": "grep '^root:' /etc/passwd | cut -d: -f7" },
+        "solution": "grep '^root:' /etc/passwd | cut -d: -f7",
+        "validation": { "type": "command_output_contains", "text": "/bin/bash" }
       }
     ]
   }

@@ -13,10 +13,12 @@ class VirtualFS {
         this.mkdir('/usr', 'root', 'root');
         this.mkdir('/usr/bin', 'root', 'root');
         this.mkdir('/etc', 'root', 'root');
+        this.mkdir('/var', 'root', 'root');
+        this.mkdir('/var/log', 'root', 'root');
         this.writeFile('/etc/hostname', 'bash-master', '644', 'root', 'root');
         this.writeFile('/etc/passwd', 'root:x:0:0:root:/root:/bin/bash\nuser:x:1000:1000:user:/home/user:/bin/bash', '644', 'root', 'root');
         this.writeFile('/etc/shadow', 'root:*:19000:0:99999:7:::', '600', 'root', 'root');
-        this.writeFile('/usr/bin/sudo', 'BINARY_DATA', '4755', 'root', 'root');
+        this.writeFile('/usr/bin/sudo', 'BINARY', '4755', 'root', 'root');
     }
 
     _resolvePath(path) {
@@ -50,7 +52,19 @@ class VirtualFS {
         return curr;
     }
 
-    mkdir(path, owner = 'user', group = 'user', permissions = '755') {
+    mkdir(path, owner = 'user', group = 'user', permissions = '755', recursive = false) {
+        if (recursive) {
+            const resolved = this._resolvePath(path);
+            const parts = resolved.split('/').filter(p => p);
+            let curr = '';
+            for (const part of parts) {
+                curr += '/' + part;
+                if (!this.exists(curr)) {
+                    this.mkdir(curr, owner, group, permissions, false);
+                }
+            }
+            return true;
+        }
         const resolved = this._resolvePath(path);
         const parts = resolved.split('/').filter(p => p);
         const name = parts.pop();
@@ -95,12 +109,13 @@ class VirtualFS {
 
     readFile(path) {
         const node = this._getNode(path);
+        if (node && node.type === 'symlink') return this.readFile(node.target);
         return (node && node.type === 'file') ? node.content : null;
     }
 
     ls(path = '.') {
         const node = this._getNode(path);
-        if (node && node.type === 'dir') {
+        if (node && (node.type === 'dir')) {
             return Object.keys(node.children);
         }
         return null;
@@ -131,15 +146,6 @@ class VirtualFS {
         const node = this._getNode(path);
         if (node) {
             node.permissions = mode;
-            return true;
-        }
-        return false;
-    }
-
-    chown(path, owner) {
-        const node = this._getNode(path);
-        if (node) {
-            node.owner = owner;
             return true;
         }
         return false;
@@ -280,7 +286,9 @@ class Shell {
         if (line.includes(' > ')) {
             const [cmd, file] = line.split(' > ').map(s => s.trim());
             const res = this._execSingle(cmd, stdin);
-            if (res.code === 0) this.fs.writeFile(file, res.stdout);
+            if (res.code === 0) {
+                this.fs.writeFile(file, res.stdout);
+            }
             return { stdout: '', stderr: res.stderr, code: res.code };
         }
         if (line.includes(' 2> ')) {
@@ -338,7 +346,7 @@ class Shell {
                 break;
             case 'cd':
                 const dir = expandedArgs[0] || this.env.HOME;
-                if (this.fs.exists(dir) && this.fs._getNode(dir).type === 'dir') {
+                if (this.fs.exists(dir) && (this.fs._getNode(dir).type === 'dir')) {
                     this.fs.cwd = this.fs._resolvePath(dir);
                     this.env.PWD = this.fs.cwd;
                 } else {
@@ -348,19 +356,10 @@ class Shell {
             case 'pwd': res.stdout = this.fs.cwd; break;
             case 'echo': res.stdout = expandedArgs.join(' '); break;
             case 'mkdir':
-                const p = expandedArgs.includes('-p');
+                const isP = expandedArgs.includes('-p');
                 const pathMk = expandedArgs.find(a => !a.startsWith('-'));
                 if (!pathMk) { res.stderr = 'mkdir: missing operand'; res.code = 1; break; }
-                if (p) {
-                    const partsMk = this.fs._resolvePath(pathMk).split('/').filter(x => x);
-                    let currMk = '';
-                    for (const part of partsMk) {
-                        currMk += '/' + part;
-                        this.fs.mkdir(currMk);
-                    }
-                } else {
-                    if (!this.fs.mkdir(pathMk)) { res.stderr = `mkdir: cannot create directory '${pathMk}'`; res.code = 1; }
-                }
+                if (!this.fs.mkdir(pathMk, 'user', 'user', '755', isP)) { res.stderr = `mkdir: cannot create directory '${pathMk}'`; res.code = 1; }
                 break;
             case 'touch':
                 if (!expandedArgs[0]) { res.stderr = 'touch: missing file operand'; res.code = 1; break; }
@@ -374,9 +373,7 @@ class Shell {
                 else res.stdout = content;
                 break;
             case 'rm':
-                const recursive = expandedArgs.includes('-r') || expandedArgs.includes('-rf');
-                const fileToRm = expandedArgs.find(a => !a.startsWith('-'));
-                if (!this.fs.rm(fileToRm, recursive)) { res.stderr = `rm: cannot remove '${fileToRm}'`; res.code = 1; }
+                this.fs.rm(expandedArgs[expandedArgs.length-1], expandedArgs.includes('-r'));
                 break;
             case 'cp':
                 const srcCp = expandedArgs[0]; const dstCp = expandedArgs[1];
@@ -433,8 +430,7 @@ class Shell {
             case 'grep':
                 const patternGrep = expandedArgs.find(a => !a.startsWith('-'));
                 const fileGrep = expandedArgs.find(a => !a.startsWith('-') && a !== patternGrep);
-                let txtGrep = stdin;
-                if (fileGrep) txtGrep = this.fs.readFile(fileGrep);
+                let txtGrep = stdin || (fileGrep ? this.fs.readFile(fileGrep) : null);
                 if (txtGrep) res.stdout = txtGrep.split('\n').filter(l => l.includes(patternGrep)).join('\n');
                 break;
             case 'sed':
@@ -460,11 +456,18 @@ class Shell {
                     }).join('\n');
                 }
                 break;
+            case 'cut':
+                const delim = expandedArgs.includes('-d') ? expandedArgs[expandedArgs.indexOf('-d')+1] : '\t';
+                const field = expandedArgs.includes('-f') ? parseInt(expandedArgs[expandedArgs.indexOf('-f')+1]) : 1;
+                const cFile = expandedArgs.find(x=>!x.startsWith('-') && x!==delim && x!==field.toString());
+                let cTxt = stdin || (cFile ? this.fs.readFile(cFile) : null);
+                if (cTxt) res.stdout = cTxt.split('\n').map(l => l.split(delim)[field-1] || '').join('\n');
+                break;
             case 'wc':
-                let txtWc = stdin || this.fs.readFile(expandedArgs[0]);
+                let txtWc = stdin || (expandedArgs.find(x=>!x.startsWith('-')) ? this.fs.readFile(expandedArgs.find(x=>!x.startsWith('-'))) : null);
                 if (txtWc) {
-                    if (expandedArgs.includes('-l')) res.stdout = txtWc.split('\n').length.toString();
-                    else res.stdout = `${txtWc.split('\n').length} ${txtWc.split(/\s+/).length} ${txtWc.length}`;
+                    if (expandedArgs.includes('-l')) res.stdout = txtWc.split('\n').filter(x=>x).length.toString();
+                    else res.stdout = `${txtWc.split('\n').filter(x=>x).length} ${txtWc.split(/\s+/).filter(w=>w).length} ${txtWc.length}`;
                 }
                 break;
             case 'sort':
@@ -493,7 +496,7 @@ class Shell {
             case 'df': res.stdout = "Filesystem     Size  Used Avail Use% Mounted on\n/dev/sda1       20G   15G  5.0G  75% /"; break;
             case 'free': res.stdout = "              total        used        free      shared  buff/cache   available\nMem:           8192        4096        4096           0           0        4096"; break;
             case 'ps': res.stdout = "  PID TTY          TIME CMD\n    1 pts/0    00:00:00 bash\n  100 pts/0    00:00:00 ps"; break;
-            case 'pgrep': res.stdout = "1"; break;
+            case 'pgrep': res.stdout = "1234"; break;
             case 'uptime': res.stdout = " 12:00:00 up 10 days, 1:00, 1 user, load average: 0.00, 0.01, 0.05"; break;
             case 'clear': res.special = 'clear'; break;
             case 'base64':
@@ -507,14 +510,10 @@ class Shell {
             case 'ping': res.stdout = "64 bytes from google.com (142.250.184.206): icmp_seq=1 ttl=117 time=14.5 ms"; break;
             case 'systemctl': res.stdout = "● dbus.service - D-Bus System Message Bus\n   Loaded: loaded (/lib/systemd/system/dbus.service; static; vendor preset: enabled)\n   Active: active (running) since Mon 2024-01-01 00:00:00 UTC; 1h ago"; break;
             case 'tar':
-                if (expandedArgs.includes('-cvf') || expandedArgs.includes('-czvf')) this.fs.writeFile(expandedArgs[1], "TAR_GZ_BINARY_DATA");
+                if (expandedArgs.includes('-czvf')) this.fs.writeFile(expandedArgs[1], "ARCHIVE_DATA");
                 break;
             case 'jq':
-                let txtJq = stdin || this.fs.readFile(expandedArgs[1]);
-                if (txtJq) {
-                    if (expandedArgs[0] === '.name') res.stdout = "bash";
-                    if (expandedArgs[0] === 'length') res.stdout = "3";
-                }
+                if (expandedArgs[0] === '.name') res.stdout = "bash";
                 break;
             case 'stat':
                 const nodeStat = this.fs._getNode(expandedArgs[0]);
